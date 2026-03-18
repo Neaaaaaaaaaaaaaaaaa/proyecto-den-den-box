@@ -3,10 +3,14 @@ include("conexion.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $id_inmueble = $_POST['id_inmueble'] ?? null;
-    $tipo_documento = $_POST['tipo_documento'];
-    $visibilidad = $_POST['visibilidad'];
+    $id_inmueble = trim($_POST['id_inmueble'] ?? '');
+    $tipo_documento = trim($_POST['tipo_documento']);
+    $visibilidad = trim($_POST['visibilidad']);
     $fecha = date("Y-m-d");
+
+    if($visibilidad === 'global'){
+        $id_inmueble = null;
+    }
 
     $carpeta = "../documentos/";
 
@@ -33,15 +37,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (move_uploaded_file($rutaTemporal, $rutaFinal)) {
 
+        // validar visibilidad y clave inmobiliaria
+        if($visibilidad === 'inmueble' && empty($id_inmueble)){
+            die("Para visibilidad 'inmueble' el campo ID Inmueble es obligatorio");
+        }
+
+        $id_inmueble_sql = ($id_inmueble === null || $id_inmueble === '') ? 'NULL' : intval($id_inmueble);
+
         $sql = "INSERT INTO DOCUMENTOS 
         (id_inmueble, tipo_documento, url_documento, fecha_subida, visibilidad)
-        VALUES (?, ?, ?, ?, ?)";
+        VALUES ($id_inmueble_sql, '$tipo_documento', '$rutaFinal', '$fecha', '$visibilidad')";
 
-        $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("issss", $id_inmueble, $tipo_documento, $rutaFinal, $fecha, $visibilidad);
-        $stmt->execute();
+        mysqli_query($conexion, $sql);
 
-        header("Location: documentos.html"); // vuelve al HTML
+        header("Location: /proyecto-den-den-box/html/placeholders/documentos.html");
+        exit();
     }
 }
 ?>

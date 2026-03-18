@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reportes — Den Den Box</title>
-  <link rel="shortcut icon" href="../../img/warzone.svg" type="image/x-icon">
+<link rel="shortcut icon" href="../../img/warzone.svg" type="image/x-icon">
 <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
 <header class="header">
   <div class="container navbar">
     <a class="brand" href="../index_admin.html">
-      <img src="../../img/logo.png">
+      <img src="../../img/logo.png" alt="Logo">
       <div>
         <div class="title">Den Den Box</div>
         <div class="subtitle">Reportes</div>
@@ -21,49 +21,65 @@
 
     <nav class="nav-links">
       <a href="../index_admin.html">Inicio</a>
-        <a href="crear.html">Crear usuario</a>
-
+      <a href="../admin_dashboard.html">Dashboard admin</a>
+      <a href="../crear.html">Crear usuario</a>
       <a href="../login.html" class="btn-login">Cerrar Sesión</a>
     </nav>
   </div>
 </header>
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<title>Reportes Avanzados</title>
-<link rel="stylesheet" href="../../css/style.css">
-</head>
 
-<body>
+<main class="container">
 
-<div class="container">
+<h1>Reportes</h1>
+<p>Filtra por fechas, genera el dashboard y exporta a PDF.</p>
 
-<h1>Reportes </h1>
+<form action="../../programas/reporte_avanzado.php" method="GET" target="reporteFrame" class="report-form">
+  <label>Fecha inicio</label>
+  <input type="date" name="inicio" class="login-input">
 
-<form action="../../programas/reporte_avanzado.php" method="GET">
+  <label>Fecha fin</label>
+  <input type="date" name="fin" class="login-input">
 
-<label>Fecha inicio</label>
-<input type="date" name="inicio" class="login-input">
-
-<label>Fecha fin</label>
-<input type="date" name="fin" class="login-input">
-
-<button type="submit" class="login-btn">Generar Reporte</button>
-
+  <button type="submit" class="login-btn">Generar reporte</button>
 </form>
+
+
+
+<section style="margin-top:20px;">
+  <h2>Vista previa del reporte</h2>
+  <iframe id="reporteFrame" name="reporteFrame" src="../../programas/reporte_avanzado.php" style="width:100%;height:650px;border:1px solid #ddd;"></iframe>
+</section>
 
 <br>
 
-<a href="../../programas/exportar_pdf_avanzado.php" class="buttonplace">
-Exportar PDF Completo
-</a>
-
-<br><br>
-
 <a href="../admin_dashboard.html" class="buttonplace">Volver</a>
 
-</div>
+</main>
+
+<script>
+  const form = document.querySelector('.report-form');
+  const iframe = document.getElementById('reporteFrame');
+  const exportLink = document.querySelector('.report-actions a[target="_blank"]');
+
+  function updateLinks(inicio, fin){
+    let query = [];
+    if (inicio) query.push('inicio='+encodeURIComponent(inicio));
+    if (fin) query.push('fin='+encodeURIComponent(fin));
+    const queryString = query.length ? '?' + query.join('&') : '';
+    iframe.src = '../../programas/reporte_avanzado.php' + queryString;
+    exportLink.href = '../../programas/exportar_pdf_avanzado.php' + queryString;
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const inicio = this.inicio.value;
+    const fin = this.fin.value;
+    updateLinks(inicio, fin);
+  });
+
+  // Inicializar con valores del iframe y export
+  updateLinks('','');
+</script>
 
 </body>
 </html>

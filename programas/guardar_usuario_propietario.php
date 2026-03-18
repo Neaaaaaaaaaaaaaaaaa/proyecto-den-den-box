@@ -18,6 +18,7 @@ $rol = 3;
 $documento = $_POST['documento'];
 $num_doc = $_POST['num_doc'];
 $num_tlf = $_POST['num_tlf'];
+$edad = isset($_POST['edad']) ? intval($_POST['edad']) : 0;
 $profesion = $_POST['profesion'];
 
 $num_inmueble = $_POST['num_inmueble'];
@@ -36,15 +37,26 @@ $cantidad_mascota = $_POST['cantidad_mascota'];
 $estado = "Activo";
 
 /* =========================
-   VERIFICAR CORREO
+   VERIFICAR CORREO y NÚMERO DE DOCUMENTO
 ========================= */
 
-$verificar = "SELECT * FROM PERSONAS WHERE correo='$correo'";
-$resultado = mysqli_query($conexion,$verificar);
+$verificar_correo = "SELECT * FROM PERSONAS WHERE correo='$correo'";
+$resultado_correo = mysqli_query($conexion,$verificar_correo);
 
-if(mysqli_num_rows($resultado) > 0){
+if(mysqli_num_rows($resultado_correo) > 0){
     echo "<script>
     alert('Este correo ya está registrado');
+    window.history.back();
+    </script>";
+    exit();
+}
+
+$verificar_documento = "SELECT * FROM PERSONAS WHERE numero_documento='$num_doc'";
+$resultado_documento = mysqli_query($conexion,$verificar_documento);
+
+if(mysqli_num_rows($resultado_documento) > 0){
+    echo "<script>
+    alert('Este número de documento ya está registrado');
     window.history.back();
     </script>";
     exit();
@@ -55,12 +67,26 @@ if(mysqli_num_rows($resultado) > 0){
 ========================= */
 
 $sql_persona = "INSERT INTO PERSONAS
-(nombre_completo,tipo_documento,numero_documento,telefono,correo)
+(nombre_completo,tipo_documento,numero_documento,telefono,correo,edad)
 VALUES
-('$nombre','$documento','$num_doc','$num_tlf','$correo')";
+('$nombre','$documento','$num_doc','$num_tlf','$correo','$edad')";
 
 mysqli_query($conexion,$sql_persona);
 $id_persona = mysqli_insert_id($conexion);
+
+/* =========================
+   CONTADORES INICIALES
+========================= */
+
+$total_personas = 1;
+$total_adultos = 0;
+$total_menores = 0;
+
+if($edad >= 18){
+    $total_adultos = 1;
+} else {
+    $total_menores = 1;
+}
 
 /* =========================
    USUARIO
@@ -134,10 +160,7 @@ mysqli_query($conexion,$sql_relacion);
    PERSONAS DEL INMUEBLE
 ========================= */
 
-$total_personas = 0;
-$total_adultos = 0;
-$total_menores = 0;
-
+// Los contadores ya tienen el registro del responsable definido arriba (1 persona)
 if(isset($_POST['personas'])){
 
     foreach($_POST['personas'] as $persona){
@@ -155,8 +178,8 @@ if(isset($_POST['personas'])){
         $total_personas++;
 
         /* PERSONA */
-        $sql_persona_extra = "INSERT INTO PERSONAS (nombre_completo)
-        VALUES ('$nombre_p')";
+        $sql_persona_extra = "INSERT INTO PERSONAS (nombre_completo, edad)
+        VALUES ('$nombre_p', '$edad_p')";
         mysqli_query($conexion,$sql_persona_extra);
 
         $id_persona_extra = mysqli_insert_id($conexion);
@@ -218,7 +241,7 @@ mysqli_query($conexion,$sql_mascota);
 
 echo "<script>
 alert('Usuario registrado correctamente');
-window.location.href='../html/crear.html';
+window.location.href='../html/propietario_crear.html';
 </script>";
 
 exit();
