@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard — Administrador</title>
+  <link rel="shortcut icon" href="../img/warzone.svg" type="image/x-icon">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container navbar">
+      <a class="brand" href="index_admin.html"><img src="../img/logo.png" alt="logo"><div><div class="title">Den Den Box</div><div class="subtitle">Administrador</div></div></a>
+      <nav class="nav-links">
+        <a href="index_admin.html">Inicio</a>
+        <a href="admin_dashboard.html" style="background:rgba(255,255,255,0.12);border-radius:8px;">Dashboard admin</a>
+        <a href="crear.html">Crear usuario</a>
+        <a href="login.html" class="btn-login">Cerrar Sesión</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container app">
+    <aside class="sidebar">
+      <h3>Panel Administrativo</h3>
+      <nav class="nav">
+        <a href="placeholders/pagos.html">Pagos</a>
+        <a href="placeholders/documentos.html">Documentos</a>
+        <a href="placeholders/propietarios_residentes.html">Propietarios/Residentes</a>
+        <a href="placeholders/comunicaciones.html">Comunicaciones</a>
+        <a href="placeholders/reportes.html">Reportes</a>
+      </nav>
+    </aside>
+
+<section class="dashboard-content">
+  <h1>Panel Administrativo</h1>
+
+  <div class="kpi-row" style="margin-top:12px;">
+
+    <div class="kpi">
+      <h2>Morosidad</h2>
+      <table class="tabla-dashboard">
+        <thead>
+          <tr>
+            <th>Apartamento</th>
+            <th>Residente</th>
+            <th>Meses adeudados</th>
+            <th>Valor total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>302</td>
+            <td>Carlos Pérez</td>
+            <td>3</td>
+            <td>$420.000</td>
+          </tr>
+          <tr>
+            <td>105</td>
+            <td>María Gómez</td>
+            <td>1</td>
+            <td>$140.000</td>
+          </tr>
+          <tr>
+            <td>407</td>
+            <td>José Díaz</td>
+            <td>2</td>
+            <td>$280.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="kpi">
+      <h2>Novedades pendientes</h2>
+      <table class="tabla-dashboard">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>NV-2210</td>
+            <td>Luces dañadas en pasillo torre B</td>
+            <td>02/12/2025</td>
+            <td>Pendiente</td>
+          </tr>
+          <tr>
+            <td>NV-2218</td>
+            <td>Grietas en parqueadero</td>
+            <td>03/12/2025</td>
+            <td>En proceso</td>
+          </tr>
+          <tr>
+            <td>NV-2225</td>
+            <td>Fuga en cuarto de bombas</td>
+            <td>04/12/2025</td>
+            <td>Pendiente</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="kpi">
+      <h2>Correspondencia</h2>
+      <table class="tabla-dashboard">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Residente</th>
+            <th>Tipo</th>
+            <th>Fecha entrega</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>C-5501</td>
+            <td>Apto 205</td>
+            <td>Paquete</td>
+            <td>03/12/2025</td>
+          </tr>
+          <tr>
+            <td>C-5504</td>
+            <td>Apto 310</td>
+            <td>Carta</td>
+            <td>04/12/2025</td>
+          </tr>
+          <tr>
+            <td>C-5510</td>
+            <td>Apto 120</td>
+            <td>Notificación</td>
+            <td>04/12/2025</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="kpi">
+      <h2>Pagos recibidos</h2>
+      <table class="tabla-dashboard">
+        <thead>
+          <tr>
+            <th>Residente</th>
+            <th>Apartamento</th>
+            <th>Fecha</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Laura Torres</td>
+            <td>214</td>
+            <td>04/12/2025</td>
+            <td>$140.000</td>
+          </tr>
+          <tr>
+            <td>Jhon Ramírez</td>
+            <td>109</td>
+            <td>03/12/2025</td>
+            <td>$140.000</td>
+          </tr>
+          <tr>
+            <td>Daniela Cárdenas</td>
+            <td>501</td>
+            <td>03/12/2025</td>
+            <td>$280.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+  </main>
+
+  <footer class="footer container">© 2025 Den Den Box — Proyecto SENA</footer>
+</body>
+</html>

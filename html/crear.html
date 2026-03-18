@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Crear Usuario — Den Den Box</title>
+
+<link rel="shortcut icon" href="../img/warzone.svg">
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+<div class="container navbar">
+
+<a class="brand" href="index_admin.html">
+<img src="../img/logo.png">
+<div>
+<div class="title">Den Den Box</div>
+<div class="subtitle">Admin - crear usuario</div>
+</div>
+</a>
+
+<nav class="nav-links">
+<a href="index_admin.html">Inicio</a>
+<a href="admin_dashboard.html">Dashboard admin</a>
+<a href="crear.html" style="background:rgba(255,255,255,0.12);border-radius:8px;">Crear usuario</a>
+<a href="login.html" class="btn-login">Cerrar Sesión</a>
+</nav>
+
+</div>
+</header>
+
+<main class="container" style="padding-top:28px;">
+
+<h1>Crear usuario</h1>
+<p>Registrar un nuevo usuario del sistema.</p>
+
+<div style="margin-top:20px; max-width:600px; background:white; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06);">
+
+<form action="../programas/guardar_usuario.php" method="POST">
+
+<label>Nombre Completo</label>
+<input type="text" name="nombre" placeholder="Nombre Completo" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+
+<label>Tipo de documento</label>
+<select name="documento" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+<option >CC </option>
+<option >TI</option>
+<option >CEDULA DE EXTRANJERIA</option>
+<option >PASAPORTE</option>
+
+</select>
+
+<label>Numero de documento</label>
+<input type="number" name="num_doc" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+
+<label>Numero de telefono</label>
+<input type="number" name="num_tlf" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+
+
+<label>Numero de inmueble</label>
+<input type="number" name="num_inmueble" required style="width:100%;padding:10px;border-radius:8px;border:1px 
+solid #d0d5dd;margin-bottom:12px;">
+
+
+
+
+<label>Numero de torre</label>
+<select name="num_torre" required>
+    <option value="">Seleccione Torre</option>
+    <option value="Alpha">Alpha</option>
+    <option value="Bravo">Bravo</option>
+    <option value="Charlie">Charlie</option>
+    <option value="Delta">Delta</option>
+</select><br><br>
+
+
+
+
+
+<label>Numero de parqueadero</label>
+<input type="number" name="parqueadero" required style="width:100%;padding:10px;border-radius:8px;
+border:1px 
+solid #d0d5dd;margin-bottom:12px;">
+
+
+
+
+
+<label>Area del inmueble</label>
+<input type="number" name="area" required style="width:100%;padding:10px;border-radius:8px;
+border:1px 
+solid #d0d5dd;margin-bottom:12px;">
+
+
+
+
+<label>Rol</label>
+<select name="rol" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+<option value="3">Residente</option>
+<option value="2">Operador</option>
+<option value="4">Propietario</option>
+</select>
+
+
+
+<label>Profesion</label>
+<input type="text" name="profesion" placeholder="" required style="width:100%;padding:10px;
+border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+
+
+    <h2 >Contacto de emergencia</h2>
+
+
+<!-- este va en tabla contacto_de_emergencia -->
+<label>Nombre Completo contacto de emergnecia</label>
+
+<input type="text" name="nombre_emergencia" placeholder="Nombre Completo" required style="width:100%;padding:10px;
+border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+
+
+<label>Numero de telefono</label>
+<input type="number" name="num_tlf_emergencia" required style="width:100%;padding:10px;border-radius:8px;border:1px 
+solid #d0d5dd;margin-bottom:12px;">
+
+
+<label>Relacion</label>
+<input type="text" name="relacion" placeholder="Nombre Completo" required style="width:100%;padding:10px;
+border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+    <h2 >Mascota</h2>
+
+<!-- este va ne tabla mascotas -->
+<label >Tipo</label>
+<input type="text" name="tipo_mascota" placeholder="Nombre Completo" required style="width:100%;padding:10px;
+border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+
+
+<label>Raza</label>
+<input type="text" name="raza" placeholder="Nombre Completo" required style="width:100%;padding:10px;
+border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+
+
+<label>Cantidad</label>
+<input type="number" name="cantidad_mascota" placeholder="Nombre Completo" required style="width:100%;padding:10px;
+border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+    <h2 >Credenciales</h2>
+
+
+<label>Correo</label>
+<input type="email" name="correo" placeholder="Correo electrónico" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Contraseña</label>
+<input type="password" name="contrasena" placeholder="Contraseña" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+
+
+
+<button type="submit" class="login-btn">
+Registrar usuario
+</button>
+
+</form>
+
+</div>
+
+</main>
+
+<section class="footer">© 2025 Den Den Box — Proyecto SENA</section>
+
+</body>
+</html>

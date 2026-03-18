@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Crear Usuario — Den Den Box</title>
+
+<link rel="shortcut icon" href="../img/warzone.svg">
+<link rel="stylesheet" href="../css/style.css">
+
+<script>
+let contador = 0;
+
+function agregarPersona() {
+    const contenedor = document.getElementById("personas_container");
+
+    const div = document.createElement("div");
+    div.style.marginBottom = "12px";
+
+    div.innerHTML = `
+        <input type="text" name="personas[${contador}][nombre]" placeholder="Nombre persona" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:6px;">
+        <input type="number" name="personas[${contador}][edad]" placeholder="Edad" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;">
+    `;
+
+    contenedor.appendChild(div);
+    contador++;
+}
+</script>
+
+</head>
+
+<body>
+
+<header class="header">
+<div class="container navbar">
+
+<a class="brand" href="index_propietario.html">
+<img src="../img/logo.png">
+<div>
+<div class="title">Den Den Box</div>
+<div class="subtitle">Propietario - crear usuario</div>
+</div>
+</a>
+
+<nav class="nav-links">
+<a href="index_propietario.html">Inicio</a>
+<a href="propietario_crear.html" style="background:rgba(255,255,255,0.12);border-radius:8px;">Crear usuario</a>
+<a href="login.html" class="btn-login">Cerrar Sesión</a>
+</nav>
+
+</div>
+</header>
+
+<main class="container" style="padding-top:28px;">
+
+<h1>Crear usuario</h1>
+<p>Registrar un nuevo usuario del sistema.</p>
+
+<div style="margin-top:20px; max-width:600px; background:white; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06);">
+
+<form action="../programas/guardar_usuario_propietario.php" method="POST">
+
+<h2>Persona responsable</h2>
+
+<label>Nombre Completo</label>
+<input type="text" name="nombre" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Tipo de documento</label>
+<select name="documento" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+<option>CC</option>
+<option>TI</option>
+<option>CEDULA DE EXTRANJERIA</option>
+<option>PASAPORTE</option>
+</select>
+
+<label>Numero de documento</label>
+<input type="number" name="num_doc" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Numero de telefono</label>
+<input type="number" name="num_tlf" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<h2>Datos del inmueble</h2>
+
+<label>Numero de inmueble</label>
+<input type="number" name="num_inmueble" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Numero de torre</label>
+<select name="num_torre" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+<option value="">Seleccione Torre</option>
+<option value="Alpha">Alpha</option>
+<option value="Bravo">Bravo</option>
+<option value="Charlie">Charlie</option>
+<option value="Delta">Delta</option>
+</select>
+
+<label>Numero de parqueadero</label>
+<input type="number" name="parqueadero" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Area del inmueble</label>
+<input type="number" name="area" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Profesion</label>
+<input type="text" name="profesion" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<h2>Personas que viven en el inmueble</h2>
+
+<div id="personas_container"></div>
+
+<button type="button" onclick="agregarPersona()" style="margin-bottom:15px;">
++ Agregar persona
+</button>
+
+<h2>Contacto de emergencia</h2>
+
+<label>Nombre</label>
+<input type="text" name="nombre_emergencia" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Telefono</label>
+<input type="number" name="num_tlf_emergencia" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Relacion</label>
+<input type="text" name="relacion" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<h2>Mascota</h2>
+
+<label>Tipo</label>
+<input type="text" name="tipo_mascota" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Raza</label>
+<input type="text" name="raza" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Cantidad</label>
+<input type="number" name="cantidad_mascota" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<h2>Credenciales</h2>
+
+<label>Correo</label>
+<input type="email" name="correo" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<label>Contraseña</label>
+<input type="password" name="contrasena" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+<button type="submit" class="login-btn">
+Registrar usuario
+</button>
+
+</form>
+
+</div>
+
+</main>
+
+<section class="footer">© 2025 Den Den Box — Proyecto SENA</section>
+
+</body>
+</html>

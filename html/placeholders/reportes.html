@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reportes — Den Den Box</title>
+  <link rel="shortcut icon" href="../../img/warzone.svg" type="image/x-icon">
+<link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container navbar">
+    <a class="brand" href="../index_admin.html">
+      <img src="../../img/logo.png">
+      <div>
+        <div class="title">Den Den Box</div>
+        <div class="subtitle">Reportes</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="../index_admin.html">Inicio</a>
+        <a href="crear.html">Crear usuario</a>
+
+      <a href="../login.html" class="btn-login">Cerrar Sesión</a>
+    </nav>
+  </div>
+</header>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reportes Avanzados</title>
+<link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Reportes </h1>
+
+<form action="../../programas/reporte_avanzado.php" method="GET">
+
+<label>Fecha inicio</label>
+<input type="date" name="inicio" class="login-input">
+
+<label>Fecha fin</label>
+<input type="date" name="fin" class="login-input">
+
+<button type="submit" class="login-btn">Generar Reporte</button>
+
+</form>
+
+<br>
+
+<a href="../../programas/exportar_pdf_avanzado.php" class="buttonplace">
+Exportar PDF Completo
+</a>
+
+<br><br>
+
+<a href="../admin_dashboard.html" class="buttonplace">Volver</a>
+
+</div>
+
+</body>
+</html>
