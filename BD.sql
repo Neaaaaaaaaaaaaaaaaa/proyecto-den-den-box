@@ -215,6 +215,11 @@ CREATE TABLE PAGOS (
     estado_pago VARCHAR(50),
     metodo_pago VARCHAR(50),
 
+    -- Campos adicionales para almacenar el registro de pago desde el formulario
+    nombre VARCHAR(120),
+    descripcion TEXT,
+    archivo VARCHAR(200),
+
     FOREIGN KEY (id_inmueble) REFERENCES INMUEBLES(id_inmueble)
 );
 

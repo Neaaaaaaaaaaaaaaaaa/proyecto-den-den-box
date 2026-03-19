@@ -17,7 +17,7 @@ if(isset($_POST['nombre'], $_POST['descripcion'], $_FILES['archivo'])){
     if(mysqli_query($conexion, $sql)){
         echo "Pago subido correctamente";
     } else {
-        echo "Error en la base de datos";
+        echo "Error en la base de datos: " . mysqli_error($conexion);
     }
 
 } else {
