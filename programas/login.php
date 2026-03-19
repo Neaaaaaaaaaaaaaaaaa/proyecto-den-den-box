@@ -31,6 +31,20 @@ if(mysqli_num_rows($resultado) > 0){
         if(mysqli_num_rows($r_res) > 0){
             $fila_res = mysqli_fetch_assoc($r_res);
             $_SESSION['id_residente'] = $fila_res['id_residente'];
+
+            // Obtener detalles del inmueble (apt, torre) del residente
+            $sql_inmueble = "SELECT i.id_inmueble, i.numero AS apto, t.nombre AS torre
+                             FROM RESIDENTE_INMUEBLE ri
+                             JOIN INMUEBLES i ON ri.id_inmueble = i.id_inmueble
+                             JOIN TORRES t ON i.id_torre = t.id_torre
+                             WHERE ri.id_residente = {$fila_res['id_residente']}";
+            $r_inm = mysqli_query($conexion, $sql_inmueble);
+            if(mysqli_num_rows($r_inm) > 0){
+                $fila_inm = mysqli_fetch_assoc($r_inm);
+                $_SESSION['id_inmueble'] = $fila_inm['id_inmueble'];
+                $_SESSION['apto'] = $fila_inm['apto'];
+                $_SESSION['torre'] = $fila_inm['torre'];
+            }
         }
     }
 
