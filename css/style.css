@@ -52,7 +52,21 @@ html,body { height: 100%; font-family: Inter, "Segoe UI", Roboto, Arial, sans-se
 .hero .cta { display:flex; gap:12px; }
 
 .cards { display:grid; gap:12px; grid-template-columns: repeat(3,1fr); margin-top:20px; color: #0083f5; }
-.card { background:var(--card-bg); padding:18px; border-radius:12px; box-shadow: 0 6px 18px rgba(16,24,40,0.06); font-weight:700; text-align:center; }
+.card {
+  background: var(--card-bg);
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+  font-weight: 700;
+  text-align: center;
+ text-decoration: none; color: var(--primary); display: block; transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(16,24,40,0.12);
+  background: #f0f6ff;
+}
 
 .app {
   display:flex; gap:18px; align-items:flex-start; padding: 20px 0;
