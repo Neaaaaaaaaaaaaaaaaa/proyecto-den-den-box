@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Validar que esté logueado como Admin o Operador
+if (!isset($_SESSION['rol']) || ($_SESSION['rol'] != 1 && $_SESSION['rol'] != 2)) {
+    header("Location: ../login.html");
+    exit;
+}
+?>
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -22,7 +32,7 @@
 
 <main class="container">
 
-<h1>Publicar Comunicación</h1>
+<h1>Publish Comunicación</h1>
 
 <form action="../../programas/guardar_comunicacion.php" method="POST">
 
@@ -52,6 +62,18 @@
 
 </form>
 
+<a href="../../programas/listar_comunicaciones_admin.php" class="buttonplace">
+Ver Comunicaciones
+</a>
+<br>
+
+    <div>
+
+        <a href="../admin_dashboard.html" class="buttonplace">Volver</a>
+
+    </div>
+</main>
+
 <script>
 document.querySelector('select[name="destinatario"]').addEventListener('change', function() {
   const input = document.getElementById('inmueble_input');
@@ -64,19 +86,6 @@ document.querySelector('select[name="destinatario"]').addEventListener('change',
   }
 });
 </script>
-
-
-<a href="../../programas/listar_comunicaciones_admin.php" class="buttonplace">
-Ver Comunicaciones
-</a>
-<br>
-
-    <div>
-
-        <a href="../admin_dashboard.html" class="buttonplace">Volver</a>
-
-    </div>
-</main>
 
 </body>
 </html>

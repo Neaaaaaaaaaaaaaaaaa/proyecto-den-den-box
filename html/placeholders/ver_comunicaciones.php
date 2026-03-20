@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Validar que esté logueado
+if (!isset($_SESSION['rol']) || ($_SESSION['rol'] != 3 && $_SESSION['rol'] != 4)) {
+    header("Location: ../login.html");
+    exit;
+}
+?>
+
 <!doctype html>
 <html lang="es">
 <head>

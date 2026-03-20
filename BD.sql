@@ -287,7 +287,10 @@ CREATE TABLE COMUNICACIONES (
   tipo VARCHAR(50),
   estado VARCHAR(20),
   contenido TEXT,
-  fecha DATETIME
+  fecha DATETIME,
+  id_inmueble INT NULL,
+  
+  FOREIGN KEY (id_inmueble) REFERENCES INMUEBLES(id_inmueble)
 );
 
 -- =========================
