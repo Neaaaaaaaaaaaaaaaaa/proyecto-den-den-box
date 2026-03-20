@@ -32,7 +32,7 @@ if (!isset($_SESSION['rol']) || ($_SESSION['rol'] != 1 && $_SESSION['rol'] != 2)
 
 <main class="container">
 
-<h1>Publish Comunicación</h1>
+<h1>Publicar Comunicación</h1>
 
 <form action="../../programas/guardar_comunicacion.php" method="POST">
 

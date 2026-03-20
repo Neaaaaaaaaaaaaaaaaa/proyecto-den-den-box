@@ -34,6 +34,12 @@
 <p>Filtra por fechas, genera el dashboard y exporta a PDF.</p>
 
 <form action="../../programas/reporte_avanzado.php" method="GET" target="reporteFrame" class="report-form">
+  <label>Tipo de reporte</label>
+  <select name="tipo" class="login-input">
+    <option value="consolidado">Consolidado</option>
+    <option value="detallado">Detallado</option>
+  </select>
+
   <label>Fecha inicio</label>
   <input type="date" name="inicio" class="login-input">
 
@@ -42,6 +48,11 @@
 
   <button type="submit" class="login-btn">Generar reporte</button>
 </form>
+
+<div class="report-actions" style="margin-top:20px;">
+  <a href="../../programas/exportar_pdf_avanzado.php" target="_blank" class="buttonplace">Exportar a PDF</a>
+  <a href="../../programas/exportar_excel.php" target="_blank" class="buttonplace">Exportar a Excel</a>
+</div>
 
 
 
@@ -59,26 +70,30 @@
 <script>
   const form = document.querySelector('.report-form');
   const iframe = document.getElementById('reporteFrame');
-  const exportLink = document.querySelector('.report-actions a[target="_blank"]');
+  const exportPdfLink = document.querySelector('.report-actions a[href*="pdf"]');
+  const exportExcelLink = document.querySelector('.report-actions a[href*="excel"]');
 
-  function updateLinks(inicio, fin){
+  function updateLinks(tipo, inicio, fin){
     let query = [];
+    if (tipo) query.push('tipo='+encodeURIComponent(tipo));
     if (inicio) query.push('inicio='+encodeURIComponent(inicio));
     if (fin) query.push('fin='+encodeURIComponent(fin));
     const queryString = query.length ? '?' + query.join('&') : '';
     iframe.src = '../../programas/reporte_avanzado.php' + queryString;
-    exportLink.href = '../../programas/exportar_pdf_avanzado.php' + queryString;
+    exportPdfLink.href = '../../programas/exportar_pdf_avanzado.php' + queryString;
+    exportExcelLink.href = '../../programas/exportar_excel.php' + queryString;
   }
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
+    const tipo = this.tipo.value;
     const inicio = this.inicio.value;
     const fin = this.fin.value;
-    updateLinks(inicio, fin);
+    updateLinks(tipo, inicio, fin);
   });
 
-  // Inicializar con valores del iframe y export
-  updateLinks('','');
+  // Inicializar con valores por defecto
+  updateLinks('consolidado','','');
 </script>
 
 </body>

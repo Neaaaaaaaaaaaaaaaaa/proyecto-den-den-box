@@ -59,12 +59,19 @@ $torres = mysqli_query($conexion,"SELECT t.nombre, COUNT(i.id_inmueble) total FR
 
 $tendencia = mysqli_query($conexion,"SELECT MONTH(fecha_reporte) mes, COUNT(*) total FROM NOVEDAD $filtro_novedad GROUP BY MONTH(fecha_reporte) ORDER BY mes");
 
-$pagoFiltroQuery = "SELECT COUNT(*) total FROM PAGOS WHERE estado_pago='Pendiente' $filtro_pago";
+$pagoFiltroQuery = "SELECT COUNT(*) total FROM PAGOS WHERE estado_pago='Pendiente'";
+if ($filtro_pago !== '') {
+    $pagoFiltroQuery .= ' AND ' . str_replace('WHERE ', '', $filtro_pago);
+}
 $pagos = mysqli_query($conexion, $pagoFiltroQuery);
 $pagoData = mysqli_fetch_assoc($pagos);
 $morosos = $pagoData['total'] ?? 0;
-$pagos_recaudados = mysqli_fetch_assoc(mysqli_query($conexion,
-"SELECT COALESCE(SUM(valor),0) total FROM PAGOS WHERE estado_pago='Pagado' $filtro_pago"))['total'] ?? 0;
+
+$pagos_recaudados_query = "SELECT COALESCE(SUM(valor),0) total FROM PAGOS WHERE estado_pago='Pagado'";
+if ($filtro_pago !== '') {
+    $pagos_recaudados_query .= ' AND ' . str_replace('WHERE ', '', $filtro_pago);
+}
+$pagos_recaudados = mysqli_fetch_assoc(mysqli_query($conexion, $pagos_recaudados_query))['total'] ?? 0;
 $pagos_total = mysqli_fetch_assoc(mysqli_query($conexion,
 "SELECT COUNT(*) total FROM PAGOS $filtro_pago"))['total'] ?? 0;
 
