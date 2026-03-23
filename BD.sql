@@ -19,6 +19,7 @@ CREATE TABLE PERSONAS (
     nombre_completo VARCHAR(120),
     tipo_documento VARCHAR(10),
     numero_documento VARCHAR(30) UNIQUE,
+    edad DATE,
     telefono VARCHAR(20),
     correo VARCHAR(100)
 );
@@ -288,6 +289,17 @@ CREATE TABLE COMUNICACIONES (
   estado VARCHAR(20),
   contenido TEXT,
   fecha DATETIME
+);
+-- =========================
+-- Tabla Paquetes
+-- =========================
+CREATE TABLE paquetes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    residente VARCHAR(140) NOT NULL,
+    empresa VARCHAR(140) NOT NULL,
+    observaciones TEXT NOT NULL,
+    estado VARCHAR(60) NOT NULL,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =========================
