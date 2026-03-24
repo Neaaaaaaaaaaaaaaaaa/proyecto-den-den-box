@@ -31,6 +31,22 @@ function agregarMenor() {
     menoresCount++;
     document.getElementById("cantidad_menores").textContent = menoresCount;
 }
+
+function toggleCamposPropietario() {
+    const rolSelect = document.getElementById("rol_select");
+    const bloquePropietario = document.getElementById("bloque_propietario_ocupa");
+
+    if (!rolSelect || !bloquePropietario) {
+        return;
+    }
+
+    const esPropietario = rolSelect.value === "4";
+    bloquePropietario.style.display = esPropietario ? "block" : "none";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    toggleCamposPropietario();
+});
 </script>
 
 </head>
@@ -130,11 +146,20 @@ solid #d0d5dd;margin-bottom:12px;">
 
 
 <label>Rol</label>
-<select name="rol" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+<select id="rol_select" name="rol" required onchange="toggleCamposPropietario()" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 <option value="3">Residente</option>
 <option value="2">Operador</option>
 <option value="4">Propietario</option>
 </select>
+
+<div id="bloque_propietario_ocupa" style="display:none;margin-bottom:12px;">
+<label>Si es propietario, ¿va a ocupar el inmueble como residente?</label>
+<div style="display:flex;gap:14px;align-items:center;margin-top:8px;">
+<label style="margin:0;"><input type="radio" name="propietario_ocupa_inmueble" value="1"> Sí</label>
+<label style="margin:0;"><input type="radio" name="propietario_ocupa_inmueble" value="0" checked> No</label>
+</div>
+<p style="font-size:13px;color:#667085;margin:8px 0 0 0;">Si eliges "Sí", el sistema lo registrará también como residente del mismo inmueble.</p>
+</div>
 
 
 

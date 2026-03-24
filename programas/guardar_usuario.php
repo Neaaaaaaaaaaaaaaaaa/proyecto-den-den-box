@@ -50,6 +50,7 @@ $relacion = mysqli_real_escape_string($conexion, post_value('relacion'));
 $tipo_mascota = mysqli_real_escape_string($conexion, post_value('tipo_mascota'));
 $raza = mysqli_real_escape_string($conexion, post_value('raza'));
 $cantidad_mascota = post_value('cantidad_mascota');
+$propietario_ocupa_inmueble = post_value('propietario_ocupa_inmueble', '0') === '1';
 $personas = isset($_POST['personas']) && is_array($_POST['personas']) ? $_POST['personas'] : [];
 $adultos = isset($_POST['adultos']) && is_array($_POST['adultos']) ? $_POST['adultos'] : [];
 $menores = isset($_POST['menores']) && is_array($_POST['menores']) ? $_POST['menores'] : [];
@@ -224,7 +225,9 @@ try {
         }
 
     } elseif($rol === 4){
-        limpiar_residente_por_persona($conexion, $id_persona);
+        if(!$propietario_ocupa_inmueble){
+            limpiar_residente_por_persona($conexion, $id_persona);
+        }
 
         $res_prop = mysqli_query($conexion, "SELECT id_propietario FROM PROPIETARIOS WHERE id_persona=$id_persona LIMIT 1");
         if($res_prop && mysqli_num_rows($res_prop) > 0){
@@ -235,6 +238,42 @@ try {
         }
 
         mysqli_query($conexion, "UPDATE INMUEBLES SET id_propietario=$id_propietario WHERE id_inmueble=$id_inmueble");
+
+        if($propietario_ocupa_inmueble){
+            $res_residente = mysqli_query($conexion, "SELECT id_residente FROM RESIDENTES WHERE id_persona=$id_persona LIMIT 1");
+            if($res_residente && mysqli_num_rows($res_residente) > 0){
+                $id_residente = intval(mysqli_fetch_assoc($res_residente)['id_residente']);
+                mysqli_query($conexion, "UPDATE RESIDENTES SET profesion='$profesion' WHERE id_residente=$id_residente");
+            } else {
+                mysqli_query($conexion, "INSERT INTO RESIDENTES (id_persona,profesion) VALUES ($id_persona,'$profesion')");
+                $id_residente = mysqli_insert_id($conexion);
+            }
+
+            mysqli_query($conexion, "DELETE FROM RESIDENTE_INMUEBLE WHERE id_residente=$id_residente");
+            mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente,$id_inmueble,CURDATE())");
+
+            $sql_totales = "SELECT
+                              COUNT(DISTINCT ri.id_residente) AS total_personas,
+                              SUM(CASE WHEN COALESCE(p.edad,0) >= 18 THEN 1 ELSE 0 END) AS total_adultos,
+                              SUM(CASE WHEN COALESCE(p.edad,0) < 18 THEN 1 ELSE 0 END) AS total_menores
+                            FROM RESIDENTE_INMUEBLE ri
+                            LEFT JOIN RESIDENTES r ON ri.id_residente = r.id_residente
+                            LEFT JOIN PERSONAS p ON r.id_persona = p.id_persona
+                            WHERE ri.id_inmueble=$id_inmueble";
+            $res_totales = mysqli_query($conexion, $sql_totales);
+            if($res_totales && mysqli_num_rows($res_totales) > 0){
+                $fila_totales = mysqli_fetch_assoc($res_totales);
+                $total_personas = intval($fila_totales['total_personas']);
+                $total_adultos = intval($fila_totales['total_adultos']);
+                $total_menores = intval($fila_totales['total_menores']);
+
+                mysqli_query($conexion, "UPDATE INMUEBLES
+                                         SET total_personas=$total_personas,
+                                             total_adultos=$total_adultos,
+                                             total_menores=$total_menores
+                                         WHERE id_inmueble=$id_inmueble");
+            }
+        }
 
     } else {
         limpiar_residente_por_persona($conexion, $id_persona);
