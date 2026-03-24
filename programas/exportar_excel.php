@@ -73,8 +73,18 @@ $total_comunicaciones = mysqli_fetch_assoc(mysqli_query($conexion, "SELECT COUNT
 $total_documentos = mysqli_fetch_assoc(mysqli_query($conexion, "SELECT COUNT(*) total FROM DOCUMENTOS"))['total'] ?? 0;
 
 /* ===== KPI PAGOS ===== */
-$pagos_recaudados = mysqli_fetch_assoc(mysqli_query($conexion, "SELECT COALESCE(SUM(valor),0) total FROM PAGOS WHERE estado_pago='Pagado' $filtro_pago"))['total'] ?? 0;
-$pagos_pendientes = mysqli_fetch_assoc(mysqli_query($conexion, "SELECT COUNT(*) total FROM PAGOS WHERE estado_pago='Pendiente' $filtro_pago"))['total'] ?? 0;
+$pagos_recaudados_query = "SELECT COALESCE(SUM(valor),0) total FROM PAGOS WHERE estado_pago='Pagado'";
+if ($filtro_pago !== '') {
+    $pagos_recaudados_query .= ' AND ' . str_replace('WHERE ', '', $filtro_pago);
+}
+$pagos_recaudados = mysqli_fetch_assoc(mysqli_query($conexion, $pagos_recaudados_query))['total'] ?? 0;
+
+$pagos_pendientes_query = "SELECT COUNT(*) total FROM PAGOS WHERE estado_pago='Pendiente'";
+if ($filtro_pago !== '') {
+    $pagos_pendientes_query .= ' AND ' . str_replace('WHERE ', '', $filtro_pago);
+}
+$pagos_pendientes = mysqli_fetch_assoc(mysqli_query($conexion, $pagos_pendientes_query))['total'] ?? 0;
+
 $pagos_total = mysqli_fetch_assoc(mysqli_query($conexion, "SELECT COUNT(*) total FROM PAGOS $filtro_pago"))['total'] ?? 0;
 
 // Para Excel, output CSV

@@ -224,6 +224,21 @@ CREATE TABLE PAGOS (
 );
 
 -- =========================
+-- TABLA AJUSTES SALDO PENDIENTE
+-- =========================
+CREATE TABLE AJUSTES_SALDO_PENDIENTE (
+    id_ajuste INT AUTO_INCREMENT PRIMARY KEY,
+    id_inmueble INT NOT NULL,
+    saldo_anterior DECIMAL(12,2) NOT NULL,
+    nuevo_saldo DECIMAL(12,2) NOT NULL,
+    motivo VARCHAR(255) DEFAULT 'Ajuste manual por administrador',
+    id_usuario_admin INT NULL,
+    fecha_ajuste DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_inmueble) REFERENCES INMUEBLES(id_inmueble),
+    FOREIGN KEY (id_usuario_admin) REFERENCES USUARIOS(id_usuario)
+);
+
+-- =========================
 -- TABLA DOCUMENTOS
 -- =========================
 CREATE TABLE DOCUMENTOS (

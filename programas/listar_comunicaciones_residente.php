@@ -5,6 +5,12 @@ include("conexion.php");
 $rol = $_SESSION['rol'] ?? null;
 $id_persona = $_SESSION['id_persona'] ?? null;
 
+// Compatibilidad con bases antiguas: agrega id_inmueble si aún no existe.
+$check_col = mysqli_query($conexion, "SHOW COLUMNS FROM COMUNICACIONES LIKE 'id_inmueble'");
+if($check_col && mysqli_num_rows($check_col) === 0){
+    mysqli_query($conexion, "ALTER TABLE COMUNICACIONES ADD COLUMN id_inmueble INT NULL");
+}
+
 // Solo Residente y Propietario pueden acceder
 if ($rol === null || ($rol != 3 && $rol != 4)) {
     header("Location: ../html/login.html?error=sesion_expirada");
@@ -122,7 +128,7 @@ $resultado = mysqli_query($conexion, $sql);
 
 <br>
 
-<a href="../html/placeholders/ver_comunicaciones.php" class="buttonplace">Volver</a>
+<a href="../html/placeholders/ver_comunicaciones.html" class="buttonplace">Volver</a>
 
 </div>
 

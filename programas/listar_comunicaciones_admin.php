@@ -4,6 +4,12 @@ include("conexion.php");
 
 $rol = $_SESSION['rol'] ?? null;
 
+// Compatibilidad con bases antiguas: agrega id_inmueble si aún no existe.
+$check_col = mysqli_query($conexion, "SHOW COLUMNS FROM COMUNICACIONES LIKE 'id_inmueble'");
+if($check_col && mysqli_num_rows($check_col) === 0){
+    mysqli_query($conexion, "ALTER TABLE COMUNICACIONES ADD COLUMN id_inmueble INT NULL");
+}
+
 // Solo Admin y Operador pueden acceder
 if ($rol === null || ($rol != 1 && $rol != 2)) {
     header("Location: ../html/login.html");
@@ -37,7 +43,7 @@ $resultado = mysqli_query($conexion, $sql);
 <h1>Comunicaciones</h1>
 
 <div style="margin-bottom:16px;">
-    <a href="../html/placeholders/comunicaciones.php" class="buttonplace">Publicar nueva comunicación</a>
+
 
     <?php if ($historial): ?>
         <a href="listar_comunicaciones_admin.php" class="buttonplace">Ver sólo vigentes</a>
@@ -80,7 +86,7 @@ $resultado = mysqli_query($conexion, $sql);
 
 <br>
 
-<a href="../html/placeholders/comunicaciones.php" class="buttonplace">Volver</a>
+<a href="../html/placeholders/comunicaciones.html" class="buttonplace">Volver</a>
 
 </div>
 

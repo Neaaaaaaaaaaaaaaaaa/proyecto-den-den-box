@@ -37,6 +37,7 @@ html,body { height: 100%; font-family: Inter, "Segoe UI", Roboto, Arial, sans-se
   font-weight:600; font-size:0.93rem;
 }
 .nav-links a:hover { background: rgba(255,255,255,0.12); }
+.nav-links a.is-active { background: rgba(255,255,255,0.12); border-radius:8px; }
 .btn-login {
   background: #0083f5; color: var(--primary); padding:8px 12px; border-radius:8px;
   text-decoration:none; font-weight:700;
@@ -319,6 +320,40 @@ html,body { height: 100%; font-family: Inter, "Segoe UI", Roboto, Arial, sans-se
 
 .residentes-table tbody tr:hover {
     background: #eef2ff;
+}
+
+.admin-main {
+  padding-top: 22px;
+}
+
+.admin-panel {
+  background:#fff;
+  padding:16px;
+  border:1px solid #d0d5dd;
+  border-radius:10px;
+  margin-bottom:14px;
+}
+
+.admin-iframe {
+  width:100%;
+  border:1px solid #d0d5dd;
+  border-radius:8px;
+  background:#fff;
+}
+
+.admin-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:end;
+}
+
+.buttonplace.secondary {
+  background:#475467;
+}
+
+.buttonplace.accent {
+  background:#0f766e;
 }
 
 .tabla-pagos {

@@ -2,6 +2,8 @@
 session_start();
 include("conexion.php");
 
+ini_set('display_errors', '0');
+
 // Solo usuarios autenticados pueden exportar reportes
 $rol = $_SESSION['rol'] ?? null;
 if ($rol === null) {
@@ -92,6 +94,12 @@ $pagos_min = $pagos_estadistica['min_valor'] ?? 0;
 $pagos_max = $pagos_estadistica['max_valor'] ?? 0;
 $pagos_suma = $pagos_estadistica['suma_valor'] ?? 0;
 
+function pdf_txt($text) {
+    $s = (string)$text;
+    $c = @iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $s);
+    return ($c !== false) ? $c : $s;
+}
+
 // Fallback a CSV si faltan librerías FPDF
 $fpdfPath = __DIR__ . '/../fpdf/fpdf.php';
 if (!file_exists($fpdfPath)) {
@@ -136,39 +144,44 @@ if (!file_exists($fpdfPath)) {
 }
 
 require($fpdfPath);
+
+if (ob_get_length()) {
+    ob_clean();
+}
+
 $pdf = new FPDF();
 $pdf->AddPage();
 $pdf->SetFont('Arial','B',16);
-$pdf->Cell(0,10,'Reporte Administrativo - Den Den Box',0,1,'C');
+$pdf->Cell(0,10,pdf_txt('Reporte Administrativo - Den Den Box'),0,1,'C');
 $pdf->SetFont('Arial','',12);
-$pdf->Cell(0,10,'Fecha generacion: ' . date('Y-m-d H:i:s'),0,1);
-$pdf->Cell(0,8,'Filtro inicio: ' . ($inicio ?: 'N/A'),0,1);
-$pdf->Cell(0,8,'Filtro fin: ' . ($fin ?: 'N/A'),0,1);
+$pdf->Cell(0,10,pdf_txt('Fecha generacion: ' . date('Y-m-d H:i:s')),0,1);
+$pdf->Cell(0,8,pdf_txt('Filtro inicio: ' . ($inicio ?: 'N/A')),0,1);
+$pdf->Cell(0,8,pdf_txt('Filtro fin: ' . ($fin ?: 'N/A')),0,1);
 $pdf->Ln(4);
-$pdf->Cell(0,10,"Total Inmuebles: $total_inmuebles",0,1);
-$pdf->Cell(0,8,"Propietarios: $total_propietarios",0,1);
-$pdf->Cell(0,8,"Residentes: $total_residentes",0,1);
-$pdf->Cell(0,8,"Usuarios: $total_usuarios",0,1);
-$pdf->Cell(0,8,"Comunicaciones: $total_comunicaciones",0,1);
-$pdf->Cell(0,8,"Documentos: $total_documentos",0,1);
-$pdf->Cell(0,8,"Pagos pendientes: $morosos",0,1);
-$pdf->Cell(0,8,"Pagos recaudados: $pagos_recaudados",0,1);
-$pdf->Cell(0,8,"Total pagos: $pagos_total",0,1);
-$pdf->Cell(0,8,"Pagos registros: $pagos_cnt",0,1);
-$pdf->Cell(0,8,"Pago promedio: $pagos_promedio",0,1);
-$pdf->Cell(0,8,"Pago stddev: $pagos_stddev",0,1);
-$pdf->Cell(0,8,"Pago minimo: $pagos_min",0,1);
-$pdf->Cell(0,8,"Pago maximo: $pagos_max",0,1);
-$pdf->Cell(0,8,"Pago suma: $pagos_suma",0,1);
+$pdf->Cell(0,10,pdf_txt("Total Inmuebles: $total_inmuebles"),0,1);
+$pdf->Cell(0,8,pdf_txt("Propietarios: $total_propietarios"),0,1);
+$pdf->Cell(0,8,pdf_txt("Residentes: $total_residentes"),0,1);
+$pdf->Cell(0,8,pdf_txt("Usuarios: $total_usuarios"),0,1);
+$pdf->Cell(0,8,pdf_txt("Comunicaciones: $total_comunicaciones"),0,1);
+$pdf->Cell(0,8,pdf_txt("Documentos: $total_documentos"),0,1);
+$pdf->Cell(0,8,pdf_txt("Pagos pendientes: $morosos"),0,1);
+$pdf->Cell(0,8,pdf_txt("Pagos recaudados: $pagos_recaudados"),0,1);
+$pdf->Cell(0,8,pdf_txt("Total pagos: $pagos_total"),0,1);
+$pdf->Cell(0,8,pdf_txt("Pagos registros: $pagos_cnt"),0,1);
+$pdf->Cell(0,8,pdf_txt("Pago promedio: $pagos_promedio"),0,1);
+$pdf->Cell(0,8,pdf_txt("Pago stddev: $pagos_stddev"),0,1);
+$pdf->Cell(0,8,pdf_txt("Pago minimo: $pagos_min"),0,1);
+$pdf->Cell(0,8,pdf_txt("Pago maximo: $pagos_max"),0,1);
+$pdf->Cell(0,8,pdf_txt("Pago suma: $pagos_suma"),0,1);
 $pdf->Ln(6);
-$pdf->Cell(0,10,'Ocupacion por Torre:',0,1);
+$pdf->Cell(0,10,pdf_txt('Ocupacion por Torre:'),0,1);
 foreach (mysqli_fetch_all($torres, MYSQLI_ASSOC) as $t) {
-    $pdf->Cell(0,8, $t['nombre'] . ' - ' . $t['total'],0,1);
+    $pdf->Cell(0,8,pdf_txt($t['nombre'] . ' - ' . $t['total']),0,1);
 }
 $pdf->Ln(6);
-$pdf->Cell(0,10,'Novedades por Mes:',0,1);
+$pdf->Cell(0,10,pdf_txt('Novedades por Mes:'),0,1);
 foreach (mysqli_fetch_all($tendencia, MYSQLI_ASSOC) as $row) {
-    $pdf->Cell(0,8,'Mes ' . $row['mes'] . ' - ' . $row['total'],0,1);
+    $pdf->Cell(0,8,pdf_txt('Mes ' . $row['mes'] . ' - ' . $row['total']),0,1);
 }
 $pdf->Output('D', 'reporte_administrativo_' . date('Ymd_His') . '.pdf');
 

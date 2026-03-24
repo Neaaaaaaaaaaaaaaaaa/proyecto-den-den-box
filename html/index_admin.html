@@ -20,18 +20,19 @@
       </a>
 
       <nav class="nav-links">
-        <a href="index_admin.html" style="background:rgba(255,255,255,0.12);border-radius:8px;">Inicio</a>
+        <a href="index_admin.html" class="is-active">Inicio</a>
         <a href="admin_dashboard.html">Dashboard admin</a>
         <a href="crear.html">Crear usuario</a>
+        <a href="gestionar_usuarios.html">Gestionar usuarios</a>
         <a href="login.html" class="btn-login">Cerrar Sesión</a>
 
       </nav>
     </div>
 
     <div class="container hero">
-      <div class="left">
-        <h1>Centraliza la gestión de novedades y comunicaciones</h1>
-        <p>Registra PQRS, organiza correspondencia, controla pagos y mantén a tu comunidad informada con trazabilidad y transparencia.</p>
+      <div class="center">
+        <h1>Bienvenido a la página del administrador</h1>
+        <p>En los botones de la esquina superior derecha podrás encontrar un dashboard con las funcionalidades disponibles, y también podrás crear un usuario en el botón "Crear usuario".</p>
 </div>
       </div>
 
@@ -39,19 +40,28 @@
     </div>
   </header>
 
-  <main class="container">
-    <section style="margin-top:18px;">
-      <h2 style="margin-bottom:8px;">Características</h2>
+  <main class="container admin-main">
+    <section>
+      <h2 style="margin-bottom:8px;">Accesos rápidos</h2>
       <div class="cards">
-        <div class="card">Seguimiento de novedades</div>
-        <div class="card">Paneles por rol</div>
-        <div class="card">Gestión documental</div>
-
-          <div class="card">Registro de PQRS</div>
-          <div class="card">Gestión de Correspondencia</div>
-          <div class="card">Reportes y KPIs</div>
-        </div>
-      </div>
+<a href="../html/placeholders/propietarios_residentes.html" class="card">
+  Ver consolidado de propietarios y residentes
+</a>
+        <a href="../programas/listar_comunicaciones.php" class="card" text-decoration="none">
+          Ver comunicaciones
+        </a>
+        <a href="../html/placeholders/comunicaciones.html" class="card">
+          Publicar comunicado
+        </a>
+        <a href="../html/placeholders/documentos.html" class="card">
+          Ver documentos
+        </a>
+        <a href="../html/placeholders/pagos.html" class="card">
+          Ver consolidado de pagos
+        </a>
+        <a href="../html/placeholders/novedades_admin.html" class="card">
+          Ver novedades
+        </a>
       </div>
     </section>
 
