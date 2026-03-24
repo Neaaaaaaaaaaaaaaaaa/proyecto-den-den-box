@@ -11,6 +11,12 @@ if($check_col && mysqli_num_rows($check_col) === 0){
     mysqli_query($conexion, "ALTER TABLE COMUNICACIONES ADD COLUMN id_inmueble INT NULL");
 }
 
+// Compatibilidad con bases antiguas: agrega url_archivo si aún no existe.
+$check_file_col = mysqli_query($conexion, "SHOW COLUMNS FROM COMUNICACIONES LIKE 'url_archivo'");
+if($check_file_col && mysqli_num_rows($check_file_col) === 0){
+    mysqli_query($conexion, "ALTER TABLE COMUNICACIONES ADD COLUMN url_archivo VARCHAR(255) NULL");
+}
+
 // Solo Residente y Propietario pueden acceder
 if ($rol === null || ($rol != 3 && $rol != 4)) {
     header("Location: ../html/login.html?error=sesion_expirada");
@@ -18,6 +24,7 @@ if ($rol === null || ($rol != 3 && $rol != 4)) {
 }
 
 $historial = isset($_GET['historial']) && $_GET['historial'] === '1';
+$embed = isset($_GET['embed']) && $_GET['embed'] === '1';
 
 // Obtener los inmuebles del usuario
 if ($rol == 3) {
@@ -86,6 +93,7 @@ $resultado = mysqli_query($conexion, $sql);
 
 <h1>Comunicaciones</h1>
 
+<?php if (!$embed): ?>
 <div style="margin-bottom:16px;">
     <?php if ($historial): ?>
         <a href="listar_comunicaciones_residente.php" class="buttonplace">Ver sólo vigentes</a>
@@ -93,6 +101,7 @@ $resultado = mysqli_query($conexion, $sql);
         <a href="listar_comunicaciones_residente.php?historial=1" class="buttonplace">Ver historial completo</a>
     <?php endif; ?>
 </div>
+<?php endif; ?>
 
 <div class="cards">
 
@@ -101,13 +110,19 @@ $resultado = mysqli_query($conexion, $sql);
 <?php else: ?>
     <?php while ($row = mysqli_fetch_assoc($resultado)): ?>
         <div class="card">
-            <strong><?php echo $row['titulo']; ?></strong><br>
+            <?php if (!empty($row['url_archivo'])): ?>
+                <a href="../<?php echo htmlspecialchars($row['url_archivo']); ?>" target="_blank" style="font-weight:700;text-decoration:none;color:inherit;">
+                    <?php echo htmlspecialchars($row['titulo']); ?>
+                </a><br>
+            <?php else: ?>
+                <strong><?php echo htmlspecialchars($row['titulo']); ?></strong><br>
+            <?php endif; ?>
             Publicado: <?php echo $row['fecha']; ?><br>
-            Tipo: <?php echo $row['tipo']; ?><br>
+            Tipo: <?php echo htmlspecialchars($row['tipo']); ?><br>
             <?php if (is_null($row['id_inmueble'])): ?>
                 <span style="background-color:#4CAF50;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">Comunicación Global</span>
             <?php else: ?>
-                <span style="background-color:#2196F3;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">Inmueble <?php echo $row['numero_inmueble']; ?></span>
+                <span style="background-color:#2196F3;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">Inmueble <?php echo htmlspecialchars($row['numero_inmueble']); ?></span>
             <?php endif; ?>
             <br>
             Estado:
@@ -117,18 +132,22 @@ $resultado = mysqli_query($conexion, $sql);
                 if ($row['estado'] == "Prioritario") echo "tag-prioritario";
                 if ($row['estado'] == "Inactiva") echo "tag-inactiva";
             ?>">
-                <?php echo $row['estado']; ?>
+                <?php echo htmlspecialchars($row['estado']); ?>
             </span>
-            <p><?php echo $row['contenido']; ?></p>
+            <p><?php echo nl2br(htmlspecialchars($row['contenido'])); ?></p>
+            <?php if (!empty($row['url_archivo'])): ?>
+                <a href="../<?php echo htmlspecialchars($row['url_archivo']); ?>" target="_blank" class="buttonplace" style="margin-top:8px;">Ver archivo adjunto</a>
+            <?php endif; ?>
         </div>
     <?php endwhile; ?>
 <?php endif; ?>
 
 </div>
 
+<?php if (!$embed): ?>
 <br>
-
 <a href="../html/placeholders/ver_comunicaciones.html" class="buttonplace">Volver</a>
+<?php endif; ?>
 
 </div>
 

@@ -50,6 +50,7 @@ $relacion = mysqli_real_escape_string($conexion, post_value('relacion'));
 $tipo_mascota = mysqli_real_escape_string($conexion, post_value('tipo_mascota'));
 $raza = mysqli_real_escape_string($conexion, post_value('raza'));
 $cantidad_mascota = post_value('cantidad_mascota');
+$personas = isset($_POST['personas']) && is_array($_POST['personas']) ? $_POST['personas'] : [];
 $adultos = isset($_POST['adultos']) && is_array($_POST['adultos']) ? $_POST['adultos'] : [];
 $menores = isset($_POST['menores']) && is_array($_POST['menores']) ? $_POST['menores'] : [];
 
@@ -134,32 +135,51 @@ try {
         mysqli_query($conexion, "DELETE FROM RESIDENTE_INMUEBLE WHERE id_residente=$id_residente");
         mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente,$id_inmueble,CURDATE())");
 
-        foreach($adultos as $nombre_adulto){
-            $nombre_adulto = trim($nombre_adulto);
-            if($nombre_adulto === ''){ continue; }
+        if(!empty($personas)){
+            foreach($personas as $persona){
+                $nombre_persona = trim($persona['nombre'] ?? '');
+                $edad_persona = intval($persona['edad'] ?? 0);
 
-            $nombre_adulto_sql = mysqli_real_escape_string($conexion, $nombre_adulto);
-            mysqli_query($conexion, "INSERT INTO PERSONAS (nombre_completo, edad) VALUES ('$nombre_adulto_sql', 18)");
-            $id_persona_extra = mysqli_insert_id($conexion);
+                if($nombre_persona === ''){ continue; }
+                if($edad_persona < 0){ $edad_persona = 0; }
 
-            mysqli_query($conexion, "INSERT INTO RESIDENTES (id_persona, profesion) VALUES ($id_persona_extra, NULL)");
-            $id_residente_extra = mysqli_insert_id($conexion);
+                $nombre_persona_sql = mysqli_real_escape_string($conexion, $nombre_persona);
+                mysqli_query($conexion, "INSERT INTO PERSONAS (nombre_completo, edad) VALUES ('$nombre_persona_sql', $edad_persona)");
+                $id_persona_extra = mysqli_insert_id($conexion);
 
-            mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente_extra,$id_inmueble,CURDATE())");
-        }
+                mysqli_query($conexion, "INSERT INTO RESIDENTES (id_persona, profesion) VALUES ($id_persona_extra, NULL)");
+                $id_residente_extra = mysqli_insert_id($conexion);
 
-        foreach($menores as $nombre_menor){
-            $nombre_menor = trim($nombre_menor);
-            if($nombre_menor === ''){ continue; }
+                mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente_extra,$id_inmueble,CURDATE())");
+            }
+        } else {
+            foreach($adultos as $nombre_adulto){
+                $nombre_adulto = trim($nombre_adulto);
+                if($nombre_adulto === ''){ continue; }
 
-            $nombre_menor_sql = mysqli_real_escape_string($conexion, $nombre_menor);
-            mysqli_query($conexion, "INSERT INTO PERSONAS (nombre_completo, edad) VALUES ('$nombre_menor_sql', 10)");
-            $id_persona_extra = mysqli_insert_id($conexion);
+                $nombre_adulto_sql = mysqli_real_escape_string($conexion, $nombre_adulto);
+                mysqli_query($conexion, "INSERT INTO PERSONAS (nombre_completo, edad) VALUES ('$nombre_adulto_sql', 18)");
+                $id_persona_extra = mysqli_insert_id($conexion);
 
-            mysqli_query($conexion, "INSERT INTO RESIDENTES (id_persona, profesion) VALUES ($id_persona_extra, NULL)");
-            $id_residente_extra = mysqli_insert_id($conexion);
+                mysqli_query($conexion, "INSERT INTO RESIDENTES (id_persona, profesion) VALUES ($id_persona_extra, NULL)");
+                $id_residente_extra = mysqli_insert_id($conexion);
 
-            mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente_extra,$id_inmueble,CURDATE())");
+                mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente_extra,$id_inmueble,CURDATE())");
+            }
+
+            foreach($menores as $nombre_menor){
+                $nombre_menor = trim($nombre_menor);
+                if($nombre_menor === ''){ continue; }
+
+                $nombre_menor_sql = mysqli_real_escape_string($conexion, $nombre_menor);
+                mysqli_query($conexion, "INSERT INTO PERSONAS (nombre_completo, edad) VALUES ('$nombre_menor_sql', 10)");
+                $id_persona_extra = mysqli_insert_id($conexion);
+
+                mysqli_query($conexion, "INSERT INTO RESIDENTES (id_persona, profesion) VALUES ($id_persona_extra, NULL)");
+                $id_residente_extra = mysqli_insert_id($conexion);
+
+                mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente_extra,$id_inmueble,CURDATE())");
+            }
         }
 
         $sql_totales = "SELECT
