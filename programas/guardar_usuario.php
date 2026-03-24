@@ -1,166 +1,245 @@
 <?php
-
 include("conexion.php");
 
 if(!$conexion){
     die("Error: no hay conexión con la base de datos");
 }
 
-/* CAPTURA DE DATOS */
+function post_value($key, $default = "") {
+    return isset($_POST[$key]) ? trim($_POST[$key]) : $default;
+}
 
-$nombre = $_POST['nombre'];
-$correo = $_POST['correo'];
-$contrasena = $_POST['contrasena'];
-$rol = $_POST['rol'];
-$documento = $_POST['documento'];
-$num_doc = $_POST['num_doc'];
-$num_tlf = $_POST['num_tlf'];
+function limpiar_residente_por_persona($conexion, $id_persona) {
+    $q = mysqli_query($conexion, "SELECT id_residente FROM RESIDENTES WHERE id_persona=".intval($id_persona));
+    while($r = mysqli_fetch_assoc($q)){
+        $id_residente = intval($r['id_residente']);
+        mysqli_query($conexion, "DELETE FROM CONTACTOS_DE_EMERGENCIA WHERE id_residente=$id_residente");
+        mysqli_query($conexion, "DELETE FROM MASCOTAS WHERE id_residente=$id_residente");
+        mysqli_query($conexion, "DELETE FROM RESIDENTE_INMUEBLE WHERE id_residente=$id_residente");
+        mysqli_query($conexion, "DELETE FROM RESIDENTES WHERE id_residente=$id_residente");
+    }
+}
 
-$profesion = $_POST['profesion'];
+function limpiar_propietario_por_persona($conexion, $id_persona) {
+    $q = mysqli_query($conexion, "SELECT id_propietario FROM PROPIETARIOS WHERE id_persona=".intval($id_persona));
+    while($r = mysqli_fetch_assoc($q)){
+        $id_propietario = intval($r['id_propietario']);
+        mysqli_query($conexion, "UPDATE INMUEBLES SET id_propietario=NULL WHERE id_propietario=$id_propietario");
+        mysqli_query($conexion, "DELETE FROM PROPIETARIOS WHERE id_propietario=$id_propietario");
+    }
+}
 
-$num_inmueble = $_POST['num_inmueble'];
-$num_torre = $_POST['num_torre'];
-$area = $_POST['area'];
-$parqueadero = $_POST['parqueadero'];
+$nombre = mysqli_real_escape_string($conexion, post_value('nombre'));
+$correo = mysqli_real_escape_string($conexion, post_value('correo'));
+$contrasena = mysqli_real_escape_string($conexion, post_value('contrasena'));
+$rol = intval(post_value('rol', '0'));
+$documento = mysqli_real_escape_string($conexion, post_value('documento'));
+$num_doc = mysqli_real_escape_string($conexion, post_value('num_doc'));
+$num_tlf = mysqli_real_escape_string($conexion, post_value('num_tlf'));
+$profesion = mysqli_real_escape_string($conexion, post_value('profesion'));
 
-$nombre_emergencia = $_POST['nombre_emergencia'];
-$num_tlf_emergencia = $_POST['num_tlf_emergencia'];
-$relacion = $_POST['relacion'];
+$num_inmueble = mysqli_real_escape_string($conexion, post_value('num_inmueble'));
+$num_torre = mysqli_real_escape_string($conexion, post_value('num_torre'));
+$area = post_value('area');
+$parqueadero = post_value('parqueadero');
 
-$tipo_mascota = $_POST['tipo_mascota'];
-$raza = $_POST['raza'];
-$cantidad_mascota = $_POST['cantidad_mascota'];
+$nombre_emergencia = mysqli_real_escape_string($conexion, post_value('nombre_emergencia'));
+$num_tlf_emergencia = mysqli_real_escape_string($conexion, post_value('num_tlf_emergencia'));
+$relacion = mysqli_real_escape_string($conexion, post_value('relacion'));
 
-$estado = "Activo";
+$tipo_mascota = mysqli_real_escape_string($conexion, post_value('tipo_mascota'));
+$raza = mysqli_real_escape_string($conexion, post_value('raza'));
+$cantidad_mascota = post_value('cantidad_mascota');
+$adultos = isset($_POST['adultos']) && is_array($_POST['adultos']) ? $_POST['adultos'] : [];
+$menores = isset($_POST['menores']) && is_array($_POST['menores']) ? $_POST['menores'] : [];
 
-/* VERIFICAR CORREO */
-
-$verificar = "SELECT * FROM PERSONAS WHERE correo='$correo'";
-$resultado = mysqli_query($conexion,$verificar);
-
-if(mysqli_num_rows($resultado) > 0){
-    echo "<script>
-    alert('Este correo ya está registrado');
-    window.history.back();
-    </script>";
+if($nombre === '' || $correo === '' || $contrasena === '' || $num_doc === '' || $num_tlf === '' || $rol <= 0){
+    echo "<script>alert('Faltan campos obligatorios');window.history.back();</script>";
     exit();
 }
 
-/* INSERTAR PERSONA */
+mysqli_begin_transaction($conexion);
 
-$sql_persona = "INSERT INTO PERSONAS
-(nombre_completo,tipo_documento,numero_documento,telefono,correo)
-VALUES
-('$nombre','$documento','$num_doc','$num_tlf','$correo')";
+try {
+    $sql_inmueble = "SELECT i.id_inmueble
+                    FROM INMUEBLES i
+                    INNER JOIN TORRES t ON i.id_torre = t.id_torre
+                    WHERE i.numero = '$num_inmueble' AND t.nombre = '$num_torre'
+                    LIMIT 1";
+    $res_inmueble = mysqli_query($conexion, $sql_inmueble);
 
-$resultado_persona = mysqli_query($conexion,$sql_persona);
+    if(!$res_inmueble || mysqli_num_rows($res_inmueble) === 0){
+        throw new Exception("El inmueble indicado no existe. Debes seleccionar un inmueble ya creado.");
+    }
 
-if(!$resultado_persona){
-    die("Error al crear persona");
+    $id_inmueble = intval(mysqli_fetch_assoc($res_inmueble)['id_inmueble']);
+
+    $res_doc = mysqli_query($conexion, "SELECT id_persona FROM PERSONAS WHERE numero_documento='$num_doc' LIMIT 1");
+    $es_actualizacion = ($res_doc && mysqli_num_rows($res_doc) > 0);
+
+    if($es_actualizacion){
+        $id_persona = intval(mysqli_fetch_assoc($res_doc)['id_persona']);
+        $res_correo_otro = mysqli_query($conexion, "SELECT id_persona FROM PERSONAS WHERE correo='$correo' AND id_persona <> $id_persona LIMIT 1");
+        if($res_correo_otro && mysqli_num_rows($res_correo_otro) > 0){
+            throw new Exception("Este correo ya pertenece a otra persona.");
+        }
+
+        $sql_persona = "UPDATE PERSONAS SET
+                        nombre_completo='$nombre',
+                        tipo_documento='$documento',
+                        telefono='$num_tlf',
+                        correo='$correo'
+                        WHERE id_persona=$id_persona";
+        if(!mysqli_query($conexion, $sql_persona)){
+            throw new Exception("No se pudo actualizar la persona.");
+        }
+    } else {
+        $res_correo = mysqli_query($conexion, "SELECT id_persona FROM PERSONAS WHERE correo='$correo' LIMIT 1");
+        if($res_correo && mysqli_num_rows($res_correo) > 0){
+            throw new Exception("Este correo ya está registrado para otra persona.");
+        }
+
+        $sql_persona = "INSERT INTO PERSONAS (nombre_completo,tipo_documento,numero_documento,telefono,correo)
+                        VALUES ('$nombre','$documento','$num_doc','$num_tlf','$correo')";
+        if(!mysqli_query($conexion, $sql_persona)){
+            throw new Exception("No se pudo crear la persona.");
+        }
+        $id_persona = mysqli_insert_id($conexion);
+    }
+
+    $estado = 'Activo';
+    $res_usuario = mysqli_query($conexion, "SELECT id_usuario FROM USUARIOS WHERE id_persona=$id_persona LIMIT 1");
+    if($res_usuario && mysqli_num_rows($res_usuario) > 0){
+        $id_usuario = intval(mysqli_fetch_assoc($res_usuario)['id_usuario']);
+        $sql_usuario = "UPDATE USUARIOS SET contraseña='$contrasena', id_rol=$rol, estado='$estado' WHERE id_usuario=$id_usuario";
+    } else {
+        $sql_usuario = "INSERT INTO USUARIOS (id_persona,contraseña,id_rol,estado) VALUES ($id_persona,'$contrasena',$rol,'$estado')";
+    }
+    if(!mysqli_query($conexion, $sql_usuario)){
+        throw new Exception("No se pudo guardar el usuario.");
+    }
+
+    if($rol === 3){
+        limpiar_propietario_por_persona($conexion, $id_persona);
+
+        $res_residente = mysqli_query($conexion, "SELECT id_residente FROM RESIDENTES WHERE id_persona=$id_persona LIMIT 1");
+        if($res_residente && mysqli_num_rows($res_residente) > 0){
+            $id_residente = intval(mysqli_fetch_assoc($res_residente)['id_residente']);
+            mysqli_query($conexion, "UPDATE RESIDENTES SET profesion='$profesion' WHERE id_residente=$id_residente");
+        } else {
+            mysqli_query($conexion, "INSERT INTO RESIDENTES (id_persona,profesion) VALUES ($id_persona,'$profesion')");
+            $id_residente = mysqli_insert_id($conexion);
+        }
+
+        mysqli_query($conexion, "DELETE FROM RESIDENTE_INMUEBLE WHERE id_residente=$id_residente");
+        mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente,$id_inmueble,CURDATE())");
+
+        foreach($adultos as $nombre_adulto){
+            $nombre_adulto = trim($nombre_adulto);
+            if($nombre_adulto === ''){ continue; }
+
+            $nombre_adulto_sql = mysqli_real_escape_string($conexion, $nombre_adulto);
+            mysqli_query($conexion, "INSERT INTO PERSONAS (nombre_completo, edad) VALUES ('$nombre_adulto_sql', 18)");
+            $id_persona_extra = mysqli_insert_id($conexion);
+
+            mysqli_query($conexion, "INSERT INTO RESIDENTES (id_persona, profesion) VALUES ($id_persona_extra, NULL)");
+            $id_residente_extra = mysqli_insert_id($conexion);
+
+            mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente_extra,$id_inmueble,CURDATE())");
+        }
+
+        foreach($menores as $nombre_menor){
+            $nombre_menor = trim($nombre_menor);
+            if($nombre_menor === ''){ continue; }
+
+            $nombre_menor_sql = mysqli_real_escape_string($conexion, $nombre_menor);
+            mysqli_query($conexion, "INSERT INTO PERSONAS (nombre_completo, edad) VALUES ('$nombre_menor_sql', 10)");
+            $id_persona_extra = mysqli_insert_id($conexion);
+
+            mysqli_query($conexion, "INSERT INTO RESIDENTES (id_persona, profesion) VALUES ($id_persona_extra, NULL)");
+            $id_residente_extra = mysqli_insert_id($conexion);
+
+            mysqli_query($conexion, "INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES ($id_residente_extra,$id_inmueble,CURDATE())");
+        }
+
+        $sql_totales = "SELECT
+                          COUNT(DISTINCT ri.id_residente) AS total_personas,
+                          SUM(CASE WHEN COALESCE(p.edad,0) >= 18 THEN 1 ELSE 0 END) AS total_adultos,
+                          SUM(CASE WHEN COALESCE(p.edad,0) < 18 THEN 1 ELSE 0 END) AS total_menores
+                        FROM RESIDENTE_INMUEBLE ri
+                        LEFT JOIN RESIDENTES r ON ri.id_residente = r.id_residente
+                        LEFT JOIN PERSONAS p ON r.id_persona = p.id_persona
+                        WHERE ri.id_inmueble=$id_inmueble";
+        $res_totales = mysqli_query($conexion, $sql_totales);
+        if($res_totales && mysqli_num_rows($res_totales) > 0){
+            $fila_totales = mysqli_fetch_assoc($res_totales);
+            $total_personas = intval($fila_totales['total_personas']);
+            $total_adultos = intval($fila_totales['total_adultos']);
+            $total_menores = intval($fila_totales['total_menores']);
+
+            mysqli_query($conexion, "UPDATE INMUEBLES
+                                     SET total_personas=$total_personas,
+                                         total_adultos=$total_adultos,
+                                         total_menores=$total_menores
+                                     WHERE id_inmueble=$id_inmueble");
+        }
+
+        $res_emergencia = mysqli_query($conexion, "SELECT id_contacto FROM CONTACTOS_DE_EMERGENCIA WHERE id_residente=$id_residente LIMIT 1");
+        if($res_emergencia && mysqli_num_rows($res_emergencia) > 0){
+            $id_contacto = intval(mysqli_fetch_assoc($res_emergencia)['id_contacto']);
+            mysqli_query($conexion, "UPDATE CONTACTOS_DE_EMERGENCIA SET nombre='$nombre_emergencia', telefono='$num_tlf_emergencia', relacion='$relacion' WHERE id_contacto=$id_contacto");
+        } else {
+            mysqli_query($conexion, "INSERT INTO CONTACTOS_DE_EMERGENCIA (id_residente,nombre,telefono,relacion) VALUES ($id_residente,'$nombre_emergencia','$num_tlf_emergencia','$relacion')");
+        }
+
+        if($tipo_mascota !== '' || $raza !== '' || $cantidad_mascota !== ''){
+            $cantidad_mascota_val = ($cantidad_mascota === '') ? 'NULL' : intval($cantidad_mascota);
+            $res_mascota = mysqli_query($conexion, "SELECT id_mascota FROM MASCOTAS WHERE id_residente=$id_residente LIMIT 1");
+            if($res_mascota && mysqli_num_rows($res_mascota) > 0){
+                $id_mascota = intval(mysqli_fetch_assoc($res_mascota)['id_mascota']);
+                mysqli_query($conexion, "UPDATE MASCOTAS SET tipo='$tipo_mascota', raza='$raza', cantidad=$cantidad_mascota_val WHERE id_mascota=$id_mascota");
+            } else {
+                mysqli_query($conexion, "INSERT INTO MASCOTAS (id_residente,tipo,raza,cantidad) VALUES ($id_residente,'$tipo_mascota','$raza',$cantidad_mascota_val)");
+            }
+        }
+
+    } elseif($rol === 4){
+        limpiar_residente_por_persona($conexion, $id_persona);
+
+        $res_prop = mysqli_query($conexion, "SELECT id_propietario FROM PROPIETARIOS WHERE id_persona=$id_persona LIMIT 1");
+        if($res_prop && mysqli_num_rows($res_prop) > 0){
+            $id_propietario = intval(mysqli_fetch_assoc($res_prop)['id_propietario']);
+        } else {
+            mysqli_query($conexion, "INSERT INTO PROPIETARIOS (id_persona,direccion_residencia) VALUES ($id_persona,'SIN DIRECCION')");
+            $id_propietario = mysqli_insert_id($conexion);
+        }
+
+        mysqli_query($conexion, "UPDATE INMUEBLES SET id_propietario=$id_propietario WHERE id_inmueble=$id_inmueble");
+
+    } else {
+        limpiar_residente_por_persona($conexion, $id_persona);
+        limpiar_propietario_por_persona($conexion, $id_persona);
+    }
+
+    if($area !== '' || $parqueadero !== ''){
+        $set_area = ($area === '') ? "area=area" : "area=".floatval($area);
+        $set_parq = ($parqueadero === '') ? "parqueadero=parqueadero" : "parqueadero='".mysqli_real_escape_string($conexion,$parqueadero)."'";
+        mysqli_query($conexion, "UPDATE INMUEBLES SET $set_area, $set_parq WHERE id_inmueble=$id_inmueble");
+    }
+
+    mysqli_commit($conexion);
+
+    if($es_actualizacion){
+        echo "<script>alert('Usuario actualizado correctamente y asignado al inmueble existente');window.location.href='../html/crear.html';</script>";
+    } else {
+        echo "<script>alert('Usuario registrado correctamente y asignado al inmueble existente');window.location.href='../html/crear.html';</script>";
+    }
+
+} catch (Exception $e) {
+    mysqli_rollback($conexion);
+    $msg = addslashes($e->getMessage());
+    echo "<script>alert('$msg');window.history.back();</script>";
 }
-
-$id_persona = mysqli_insert_id($conexion);
-
-/*INSERTAR USUARIO */
-
-$sql_usuario = "INSERT INTO USUARIOS
-(id_persona,contraseña,id_rol,estado)
-VALUES
-('$id_persona','$contrasena','$rol','$estado')";
-
-$resultado_usuario = mysqli_query($conexion,$sql_usuario);
-
-if(!$resultado_usuario){
-    die("Error al crear usuario");
-}
-
-/*INSERTAR RESIDENTE  */
-
-$sql_residente = "INSERT INTO RESIDENTES (id_persona,profesion)
-VALUES ('$id_persona','$profesion')";
-
-$resultado_residente = mysqli_query($conexion,$sql_residente);
-
-if(!$resultado_residente){
-    die("Error al crear residente");
-}
-
-$id_residente = mysqli_insert_id($conexion);
-
-/*INSERTAR PROPIETARIO */
-
-$sql_propietario = "INSERT INTO PROPIETARIOS (id_persona,direccion_residencia)
-VALUES ('$id_persona','SIN DIRECCION')";
-
-$resultado_propietario = mysqli_query($conexion,$sql_propietario);
-
-if(!$resultado_propietario){
-    die("Error al crear propietario");
-}
-
-$id_propietario = mysqli_insert_id($conexion);
-
-/* BUSCAR TORRE */
-
-$sql_buscar_torre = "SELECT id_torre FROM TORRES WHERE nombre='$num_torre'";
-$resultado_torre = mysqli_query($conexion,$sql_buscar_torre);
-
-if(mysqli_num_rows($resultado_torre) > 0){
-    $fila = mysqli_fetch_assoc($resultado_torre);
-    $id_torre = $fila['id_torre'];
-} else {
-    die("Error: la torre no existe");
-}
-
-/* INSERTAR INMUEBLE */
-
-$sql_inmueble = "INSERT INTO INMUEBLES
-(numero,id_torre,area,parqueadero,id_propietario)
-VALUES
-('$num_inmueble','$id_torre','$area','$parqueadero','$id_propietario')";
-
-$resultado_inmueble = mysqli_query($conexion,$sql_inmueble);
-
-if(!$resultado_inmueble){
-    die("Error al crear inmueble");
-}
-
-$id_inmueble = mysqli_insert_id($conexion);
-
-/* RELACION RESIDENTE - INMUEBLE */
-
-$sql_relacion = "INSERT INTO RESIDENTE_INMUEBLE
-(id_residente,id_inmueble,fecha_ingreso)
-VALUES
-('$id_residente','$id_inmueble',CURDATE())";
-
-mysqli_query($conexion,$sql_relacion);
-
-/* CONTACTO DE EMERGENCIA */
-
-$sql_emergencia = "INSERT INTO CONTACTOS_DE_EMERGENCIA
-(id_residente,nombre,telefono,relacion)
-VALUES
-('$id_residente','$nombre_emergencia','$num_tlf_emergencia','$relacion')";
-
-mysqli_query($conexion,$sql_emergencia);
-
-/* MASCOTAS */
-
-$sql_mascota = "INSERT INTO MASCOTAS
-(id_residente,tipo,raza,cantidad)
-VALUES
-('$id_residente','$tipo_mascota','$raza','$cantidad_mascota')";
-
-mysqli_query($conexion,$sql_mascota);
-
-/* FINAL */
-
-echo "<script>
-alert('Usuario registrado correctamente');
-window.location.href='../html/crear.html';
-</script>";
 
 exit();
-
 ?>

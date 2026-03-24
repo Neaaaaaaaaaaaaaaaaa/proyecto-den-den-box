@@ -8,6 +8,31 @@
 <link rel="shortcut icon" href="../img/warzone.svg">
 <link rel="stylesheet" href="../css/style.css">
 
+<script>
+let adultosCount = 0;
+let menoresCount = 0;
+
+function agregarAdulto() {
+    const contenedor = document.getElementById("adultos_container");
+    const div = document.createElement("div");
+    div.style.marginBottom = "8px";
+    div.innerHTML = '<input type="text" name="adultos[]" placeholder="Nombre del adulto" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;">';
+    contenedor.appendChild(div);
+    adultosCount++;
+    document.getElementById("cantidad_adultos").textContent = adultosCount;
+}
+
+function agregarMenor() {
+    const contenedor = document.getElementById("menores_container");
+    const div = document.createElement("div");
+    div.style.marginBottom = "8px";
+    div.innerHTML = '<input type="text" name="menores[]" placeholder="Nombre del menor" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;">';
+    contenedor.appendChild(div);
+    menoresCount++;
+    document.getElementById("cantidad_menores").textContent = menoresCount;
+}
+</script>
+
 </head>
 
 <body>
@@ -26,19 +51,20 @@
 <nav class="nav-links">
 <a href="index_admin.html">Inicio</a>
 <a href="admin_dashboard.html">Dashboard admin</a>
-<a href="crear.html" style="background:rgba(255,255,255,0.12);border-radius:8px;">Crear usuario</a>
+<a href="crear.html" class="is-active">Crear usuario</a>
+<a href="gestionar_usuarios.html">Gestionar usuarios</a>
 <a href="login.html" class="btn-login">Cerrar Sesión</a>
 </nav>
 
 </div>
 </header>
 
-<main class="container" style="padding-top:28px;">
+<main class="container admin-main">
 
 <h1>Crear usuario</h1>
-<p>Registrar un nuevo usuario del sistema.</p>
+<p>Registrar o actualizar un usuario del sistema y asignarlo a un inmueble ya creado.</p>
 
-<div style="margin-top:20px; max-width:600px; background:white; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06);">
+<div class="admin-panel" style="max-width:600px; box-shadow:0 6px 18px rgba(0,0,0,0.06);">
 
 <form action="../programas/guardar_usuario.php" method="POST">
 
@@ -50,28 +76,28 @@
 <select name="documento" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 <option >CC </option>
 <option >TI</option>
-<option >CEDULA DE EXTRANJERIA</option>
+<option >CÉDULA DE EXTRANJERÍA</option>
 <option >PASAPORTE</option>
 
 </select>
 
-<label>Numero de documento</label>
+<label>Número de documento</label>
 <input type="number" name="num_doc" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
 
-<label>Numero de telefono</label>
+<label>Número de teléfono</label>
 <input type="number" name="num_tlf" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
 
 
-<label>Numero de inmueble</label>
+<label>Número de inmueble existente</label>
 <input type="number" name="num_inmueble" required style="width:100%;padding:10px;border-radius:8px;border:1px 
 solid #d0d5dd;margin-bottom:12px;">
 
 
 
 
-<label>Numero de torre</label>
+<label>Torre del inmueble existente</label>
 <select name="num_torre" required>
     <option value="">Seleccione Torre</option>
     <option value="Alpha">Alpha</option>
@@ -80,11 +106,13 @@ solid #d0d5dd;margin-bottom:12px;">
     <option value="Delta">Delta</option>
 </select><br><br>
 
+<p style="font-size:13px;color:#667085;margin:-6px 0 14px 0;">Este formulario no crea inmuebles nuevos. Solo asigna el usuario al inmueble que ya exista en la base de datos.</p>
 
 
 
 
-<label>Numero de parqueadero <small>(opcional)</small></label>
+
+<label>Número de parqueadero <small>(opcional)</small></label>
 <input type="number" name="parqueadero" style="width:100%;padding:10px;border-radius:8px;
 border:1px 
 solid #d0d5dd;margin-bottom:12px;">
@@ -93,7 +121,7 @@ solid #d0d5dd;margin-bottom:12px;">
 
 
 
-<label>Area del inmueble <small>(opcional)</small></label>
+<label>Área del inmueble <small>(opcional)</small></label>
 <input type="number" name="area" style="width:100%;padding:10px;border-radius:8px;
 border:1px 
 solid #d0d5dd;margin-bottom:12px;">
@@ -110,9 +138,23 @@ solid #d0d5dd;margin-bottom:12px;">
 
 
 
-<label>Profesion</label>
+<label>Profesión</label>
 <input type="text" name="profesion" placeholder="" required style="width:100%;padding:10px;
 border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+
+        <h2>Personas en el inmueble</h2>
+        <p style="font-size:13px;color:#667085;margin:-6px 0 14px 0;">
+            Agrega los nombres de adultos y menores asociados al apartamento.
+            Adultos: <strong id="cantidad_adultos">0</strong> | Menores: <strong id="cantidad_menores">0</strong>
+        </p>
+
+        <label>Adultos</label>
+        <div id="adultos_container" style="margin-bottom:10px;"></div>
+        <button type="button" onclick="agregarAdulto()" style="display:block;margin-bottom:14px;">+ Agregar adulto</button>
+
+        <label style="display:block; margin-top:4px;">Menores</label>
+        <div id="menores_container" style="margin-bottom:10px;"></div>
+        <button type="button" onclick="agregarMenor()" style="display:block;margin-bottom:16px;">+ Agregar menor</button>
 
 
 
@@ -120,19 +162,19 @@ border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
 
 <!-- este va en tabla contacto_de_emergencia -->
-<label>Nombre Completo contacto de emergnecia</label>
+<label>Nombre Completo contacto de emergencia</label>
 
 <input type="text" name="nombre_emergencia" placeholder="Nombre Completo" required style="width:100%;padding:10px;
 border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
 
 
-<label>Numero de telefono</label>
+<label>Número de teléfono</label>
 <input type="number" name="num_tlf_emergencia" required style="width:100%;padding:10px;border-radius:8px;border:1px 
 solid #d0d5dd;margin-bottom:12px;">
 
 
-<label>Relacion</label>
+<label>Relación</label>
 <input type="text" name="relacion" placeholder="Nombre Completo" required style="width:100%;padding:10px;
 border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 

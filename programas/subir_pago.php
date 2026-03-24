@@ -2,6 +2,18 @@
 session_start();
 include("conexion.php");
 
+mysqli_query($conexion, "CREATE TABLE IF NOT EXISTS AJUSTES_SALDO_PENDIENTE (
+  id_ajuste INT AUTO_INCREMENT PRIMARY KEY,
+  id_inmueble INT NOT NULL,
+  saldo_anterior DECIMAL(12,2) NOT NULL,
+  nuevo_saldo DECIMAL(12,2) NOT NULL,
+  motivo VARCHAR(255) DEFAULT 'Ajuste manual por administrador',
+  id_usuario_admin INT NULL,
+  fecha_ajuste DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_inmueble) REFERENCES INMUEBLES(id_inmueble),
+  FOREIGN KEY (id_usuario_admin) REFERENCES USUARIOS(id_usuario)
+)");
+
 $id_inmueble_sql = isset($_SESSION['id_inmueble']) ? intval($_SESSION['id_inmueble']) : 'NULL';
 
 if(isset($_POST['nombre'], $_POST['descripcion'], $_POST['fecha_pago'], $_POST['valor'], $_POST['metodo_pago'], $_POST['estado_pago'], $_FILES['archivo'])){
@@ -11,7 +23,10 @@ if(isset($_POST['nombre'], $_POST['descripcion'], $_POST['fecha_pago'], $_POST['
     $fecha_pago = $_POST['fecha_pago'];
     $valor = $_POST['valor'];
     $metodo_pago = $_POST['metodo_pago'];
-    $estado_pago = $_POST['estado_pago'];
+    $estado_pago = trim($_POST['estado_pago']);
+    if(strtolower($estado_pago) === 'al dia'){
+      $estado_pago = 'Pagado';
+    }
 
     $archivo = $_FILES['archivo']['name'];
     $ruta = "../uploads/" . $archivo;
@@ -22,6 +37,30 @@ if(isset($_POST['nombre'], $_POST['descripcion'], $_POST['fecha_pago'], $_POST['
             VALUES($id_inmueble_sql,'$nombre','$descripcion','$archivo','$fecha_pago','$valor','$metodo_pago','$estado_pago')";
 
     if(mysqli_query($conexion, $sql)){
+      if($id_inmueble_sql !== 'NULL' && strcasecmp($estado_pago, 'Pagado') === 0){
+        $id_inmueble_num = intval($id_inmueble_sql);
+        $sql_saldo_actual = "SELECT
+          COALESCE((SELECT SUM(valor) FROM PAGOS WHERE id_inmueble = $id_inmueble_num AND estado_pago = 'Pendiente'), 0)
+          + COALESCE((SELECT SUM(nuevo_saldo - saldo_anterior) FROM AJUSTES_SALDO_PENDIENTE WHERE id_inmueble = $id_inmueble_num), 0)
+          AS saldo_actual";
+
+        $r_saldo = mysqli_query($conexion, $sql_saldo_actual);
+        if($r_saldo){
+          $f_saldo = mysqli_fetch_assoc($r_saldo);
+          $saldo_actual = isset($f_saldo['saldo_actual']) ? floatval($f_saldo['saldo_actual']) : 0;
+          $valor_pago = floatval($valor);
+          $nuevo_saldo = $saldo_actual - $valor_pago;
+          if($nuevo_saldo < 0){
+            $nuevo_saldo = 0;
+          }
+
+          $id_usuario = isset($_SESSION['id_usuario']) ? intval($_SESSION['id_usuario']) : 'NULL';
+          $motivo_sql = mysqli_real_escape_string($conexion, 'Descuento automatico por pago registrado por residente');
+          $sql_ajuste = "INSERT INTO AJUSTES_SALDO_PENDIENTE (id_inmueble, saldo_anterior, nuevo_saldo, motivo, id_usuario_admin)
+                   VALUES ($id_inmueble_num, $saldo_actual, $nuevo_saldo, '$motivo_sql', $id_usuario)";
+          mysqli_query($conexion, $sql_ajuste);
+        }
+      }
         $respuesta = "ok";
     } else {
         $respuesta = "Error en la base de datos: " . mysqli_error($conexion);
