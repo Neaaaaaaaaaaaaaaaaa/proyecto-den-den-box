@@ -54,6 +54,18 @@ $resultado = mysqli_query($conexion, $sql);
   }
   .btn-editar { background: #0f766e; }
   .btn-eliminar { background: #b42318; }
+  .btn-estado-activo { background: #027a48; }
+  .btn-estado-inactivo { background: #b54708; }
+  .estado-chip {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .estado-activo { background: #027a48; }
+  .estado-inactivo { background: #b54708; }
 </style>
 </head>
 <body>
@@ -66,6 +78,7 @@ $resultado = mysqli_query($conexion, $sql);
       <th>Teléfono</th>
       <th>Correo</th>
       <th>Rol</th>
+      <th>Estado</th>
       <th>Inmueble</th>
       <th>Acciones</th>
     </tr>
@@ -74,6 +87,13 @@ $resultado = mysqli_query($conexion, $sql);
   <?php while($fila = mysqli_fetch_assoc($resultado)): ?>
     <?php
       $inmueble = ($fila['id_rol'] == 3) ? $fila['inmuebles_residente'] : (($fila['id_rol'] == 4) ? $fila['inmuebles_propietario'] : '-');
+      $estado_raw = trim((string)$fila['estado']);
+      $es_activo = ($estado_raw === '1' || strcasecmp($estado_raw, 'Activo') === 0);
+      $estado_texto = $es_activo ? 'Activo' : 'Inactivo';
+      $nuevo_estado = $es_activo ? '0' : '1';
+      $clase_estado = $es_activo ? 'estado-chip estado-activo' : 'estado-chip estado-inactivo';
+      $clase_boton_estado = $es_activo ? 'btn-mini btn-estado-inactivo' : 'btn-mini btn-estado-activo';
+      $texto_boton_estado = $es_activo ? 'Inactivar' : 'Activar';
     ?>
     <tr>
       <td><?php echo htmlspecialchars($fila['nombre_completo']); ?></td>
@@ -81,10 +101,16 @@ $resultado = mysqli_query($conexion, $sql);
       <td><?php echo htmlspecialchars($fila['telefono']); ?></td>
       <td><?php echo htmlspecialchars($fila['correo']); ?></td>
       <td><?php echo htmlspecialchars($fila['nombre_rol']); ?></td>
+      <td><span class="<?php echo $clase_estado; ?>"><?php echo $estado_texto; ?></span></td>
       <td><?php echo htmlspecialchars($inmueble); ?></td>
       <td>
         <div class="acciones">
           <a class="btn-mini btn-editar" href="editar_usuario.php?id_usuario=<?php echo intval($fila['id_usuario']); ?>" target="_top">Modificar</a>
+          <form method="post" action="actualizar_estado_usuario.php" target="_top" onsubmit="return confirm('¿Deseas cambiar el estado de este usuario?');">
+            <input type="hidden" name="id_usuario" value="<?php echo intval($fila['id_usuario']); ?>">
+            <input type="hidden" name="nuevo_estado" value="<?php echo $nuevo_estado; ?>">
+            <button type="submit" class="<?php echo $clase_boton_estado; ?>"><?php echo $texto_boton_estado; ?></button>
+          </form>
           <form method="post" action="eliminar_usuario.php" target="_top" onsubmit="return confirm('¿Eliminar este usuario y sus datos asociados?');">
             <input type="hidden" name="id_usuario" value="<?php echo intval($fila['id_usuario']); ?>">
             <button type="submit" class="btn-mini btn-eliminar">Eliminar</button>
