@@ -8,10 +8,6 @@
   <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-<!--  -->
-<!--  -->
-<!-- aqui va el php de grabar producto -->
-<!--  -->
 <header class="header">
   <div class="container navbar">
     <a class="brand" href="../index.html">
@@ -31,31 +27,29 @@
 
 <main class="container" style="padding-top:28px;">
 
-  <h1>Registrar Novedades</h1>
-  <p>Completa la información de la novedad.</p>
+  <h1>Registrar Paquete</h1>
+  <p>Completa la información del paquete.</p>
 
   <div style="margin-top:20px;max-width:600px;background:white;padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);">
-    <form action="../../programas/novedades.php" method="POST">
-      <label>Nombre del destinatario</label>
-      <input type="text" placeholder="Nombre completo" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+    <form action="../../programas/guardar_paquetes.php" method="POST">
+      <label>Residente</label>
+      <input type="text" name="residente" placeholder="Nombre del residente" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
-      <label>Tipo de Novedad</label>
-      <select style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
-        <option>Seguridad</option>
-        <option>Mantenimiento</option>
-        <option>Parqueaderos</option>
-        <option>Correspondencia y Paquetes</option>
-        <option>Convivencia</option>
-        <option>Administrativas</option>
-        <option>Emergencias</option>
+      <label>Empresa</label>
+      <input type="text" name="empresa" placeholder="Empresa remitente" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
+      <label>Estado</label>
+      <select name="estado" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+        <option value="Pendiente">Pendiente</option>
+        <option value="Entregado">Entregado</option>
+        <option value="Devuelto">Devuelto</option>
       </select>
 
       <label>Observaciones</label>
-      <textarea name="observaciones" placeholder="Especificar la Novedad..." required style="width:100%;height:120px;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:14px;resize: vertical;max-width: 100%;"></textarea>
+      <textarea name="observaciones" placeholder="Observaciones del paquete..." required style="width:100%;height:120px;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:14px;resize: vertical;max-width: 100%;"></textarea>
 
-      <button style="background:var(--primary);color:white;padding:10px 14px;border:none;border-radius:8px;font-weight:700;">
-        Registrar
+      <button type="submit" style="background:var(--primary);color:white;padding:10px 14px;border:none;border-radius:8px;font-weight:700;">
+        Registrar Paquete
       </button>
     </form>
   </div>
