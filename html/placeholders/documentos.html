@@ -4,78 +4,158 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Documentos — Den Den Box</title>
-
 <link rel="shortcut icon" href="../../img/warzone.svg" type="image/x-icon">
 <link rel="stylesheet" href="../../css/style.css">
-
 </head>
-
 <body>
-
 <header class="header">
-  <div class="container navbar">
+	<div class="container navbar">
+		<a class="brand" href="../index_admin.html">
+			<img src="../../img/logo.png">
+			<div>
+				<div class="title">Den Den Box</div>
+				<div class="subtitle">Documentos</div>
+			</div>
+		</a>
 
-    <a class="brand" href="../index_admin.html">
-      <img src="../../img/logo.png">
-
-      <div>
-        <div class="title">Den Den Box</div>
-        <div class="subtitle">Documentos</div>
-      </div>
-
-    </a>
-
-    <nav class="nav-links">
-      <a href="../index_admin.html">Inicio</a>
-      <a href="../login.html" class="btn-login">Cerrar Sesión</a>
-    </nav>
-
-  </div>
+		<nav class="nav-links">
+			<a href="../index_admin.html">Inicio</a>
+			<a href="../admin_dashboard.html">Dashboard admin</a>
+			<a href="../crear.html">Crear usuario</a>
+			<a href="../gestionar_usuarios.html">Gestionar usuarios</a>
+			<a href="../login.html" class="btn-login">Cerrar Sesión</a>
+		</nav>
+	</div>
 </header>
 
-<main class="container" style="padding-top:22px;">
+<main class="container admin-main">
+	<h1>Documentos</h1>
+	<p>Publica documentos globales o por apartamento seleccionando primero la torre y luego el apartamento.</p>
 
-<h1>Documentos</h1>
+	<div id="mensajeEstado" style="display:none;padding:10px;border-radius:8px;background:#eef6ff;border:1px solid #b9d9ff;color:#0b4f93;margin-bottom:12px;"></div>
 
-<p>
-Administra y publica los documentos oficiales disponibles para los residentes.
-Desde esta sección puedes cargar reglamentos, estados de cuenta, circulares,
-reportes y cualquier archivo relevante para la copropiedad.
-</p>
+	<h2>Subir documento</h2>
+	<form action="../../programas/subir_documento.php" method="POST" enctype="multipart/form-data" class="admin-panel" style="padding:16px;">
+		<label>Tipo de documento</label><br>
+		<input type="text" name="tipo_documento" placeholder="Reglamento, informe, acta, etc." required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin:8px 0 12px 0;">
 
+		<label>Visibilidad (automática)</label><br>
+		<input id="visibilidad_texto" type="text" value="Global" readonly style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;background:#f8fafc;margin:8px 0 12px 0;">
+		<input id="visibilidad" type="hidden" name="visibilidad" value="global">
 
-<h2>Subir documento</h2>
+		<label>Torre</label><br>
+		<select id="torre" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin:8px 0 12px 0;">
+			<option value="">No seleccionar torre (documento global)</option>
+		</select>
 
-<form action="/proyecto-den-den-box/programas/subir_documento.php" method="POST" enctype="multipart/form-data">
-    
-    <input type="number" name="id_inmueble" placeholder="ID Inmueble">
-    <input type="text" name="tipo_documento" placeholder="Reglamento, informe, acta, etc." required>
-    <input type="file" name="documento" required>
+		<label>Apartamento</label><br>
+		<select id="id_inmueble" name="id_inmueble" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin:8px 0 12px 0;">
+			<option value="">No seleccionar apartamento (documento global)</option>
+		</select>
 
-    <select name="visibilidad">
-        <option value="global">Global</option>
-        <option value="inmueble">Por Inmueble</option>
-    </select>
+		<p style="font-size:13px;color:#667085;margin:-2px 0 12px 0;">Se listan todos los apartamentos de la torre (ocupados y desocupados).</p>
 
-    <button type="submit">Subir</button>
-</form>
+		<label>Archivo (pdf, doc, docx, jpg, png)</label><br>
+		<input type="file" name="documento" required style="margin:8px 0 12px 0;">
 
+		<button type="submit" class="buttonplace">Subir</button>
+	</form>
 
+	<h2 style="margin-top:18px;">Documentos publicados</h2>
+	<iframe src="../../programas/listar_documentos.php" width="100%" height="420" class="admin-iframe"></iframe>
 
-<h2>Documentos publicados</h2>
-
-<iframe src="/proyecto-den-den-box/programas/listar_documentos.php" width="100%" height="400"></iframe>
-
-
-    <div>
-        <a href="../admin_dashboard.html" class="buttonplace">Volver</a>
-    </div>
-
-
+	<div>
+		<a href="../admin_dashboard.html" class="buttonplace">Volver</a>
+	</div>
 </main>
 
 <section class="footer">© 2025 Den Den Box — Proyecto SENA</section>
 
+<script>
+	const msgMap = {
+		ok: "Documento cargado correctamente.",
+		deleted: "Documento eliminado correctamente.",
+		delete_error: "No se pudo eliminar el documento.",
+		unauthorized: "No autorizado para eliminar documentos.",
+		invalid: "Completa correctamente los datos del formulario.",
+		need_inmueble: "Debes elegir apartamento para visibilidad por inmueble.",
+		inmueble_not_found: "El apartamento seleccionado no existe.",
+		filetype: "Tipo de archivo no permitido.",
+		filesize: "El archivo supera el límite de 5MB.",
+		upload_error: "No se pudo cargar el archivo.",
+		db_error: "No se pudo guardar en base de datos."
+	};
 
+	const params = new URLSearchParams(window.location.search);
+	const status = params.get("status");
+	const box = document.getElementById("mensajeEstado");
+	if (status && msgMap[status]) {
+		box.textContent = msgMap[status];
+		box.style.display = "block";
+	}
+
+	const torreSelect = document.getElementById("torre");
+	const inmuebleSelect = document.getElementById("id_inmueble");
+	const visibilidadInput = document.getElementById("visibilidad");
+	const visibilidadTexto = document.getElementById("visibilidad_texto");
+
+	function actualizarVisibilidadAutomatica() {
+		const byInmueble = inmuebleSelect.value !== "";
+		visibilidadInput.value = byInmueble ? "inmueble" : "global";
+		visibilidadTexto.value = byInmueble ? "Por apartamento" : "Global";
+	}
+
+	async function cargarTorres() {
+		torreSelect.innerHTML = '<option value="">No seleccionar torre (documento global)</option>';
+		try {
+			const resp = await fetch("../../programas/documentos_torres.php");
+			const data = await resp.json();
+			(data.torres || []).forEach(t => {
+				const op = document.createElement("option");
+				op.value = t.nombre;
+				op.textContent = t.nombre;
+				torreSelect.appendChild(op);
+			});
+		} catch (_) {
+			torreSelect.innerHTML = '<option value="">No se pudieron cargar torres</option>';
+		}
+	}
+
+	async function cargarInmueblesPorTorre() {
+		inmuebleSelect.innerHTML = '<option value="">Cargando apartamentos...</option>';
+		const torre = torreSelect.value;
+		try {
+			if (!torre) {
+				inmuebleSelect.innerHTML = '<option value="">No seleccionar apartamento (documento global)</option>';
+				actualizarVisibilidadAutomatica();
+				return;
+			}
+
+			const url = `../../programas/documentos_inmuebles.php?torre=${encodeURIComponent(torre)}`;
+			const resp = await fetch(url);
+			const data = await resp.json();
+			inmuebleSelect.innerHTML = '<option value="">No seleccionar apartamento (documento global)</option>';
+			(data.inmuebles || []).forEach(i => {
+				const op = document.createElement("option");
+				op.value = i.id_inmueble;
+				op.textContent = `ID ${i.id_inmueble} - Torre ${i.torre} - Apto ${i.numero}`;
+				inmuebleSelect.appendChild(op);
+			});
+			actualizarVisibilidadAutomatica();
+		} catch (_) {
+			inmuebleSelect.innerHTML = '<option value="">No se pudieron cargar apartamentos</option>';
+			actualizarVisibilidadAutomatica();
+		}
+	}
+
+	torreSelect.addEventListener("change", cargarInmueblesPorTorre);
+	inmuebleSelect.addEventListener("change", actualizarVisibilidadAutomatica);
+
+	(async () => {
+		await cargarTorres();
+		await cargarInmueblesPorTorre();
+		actualizarVisibilidadAutomatica();
+	})();
+</script>
 </body>
 </html>

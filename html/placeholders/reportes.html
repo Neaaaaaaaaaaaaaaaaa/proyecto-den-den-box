@@ -23,17 +23,24 @@
       <a href="../index_admin.html">Inicio</a>
       <a href="../admin_dashboard.html">Dashboard admin</a>
       <a href="../crear.html">Crear usuario</a>
+      <a href="../gestionar_usuarios.html">Gestionar usuarios</a>
       <a href="../login.html" class="btn-login">Cerrar Sesión</a>
     </nav>
   </div>
 </header>
 
-<main class="container">
+<main class="container admin-main">
 
 <h1>Reportes</h1>
-<p>Filtra por fechas, genera el dashboard y exporta a PDF.</p>
+<p>Filtra por fechas, genera el dashboard y guarda la vista previa en PDF o exporta a Excel.</p>
 
 <form action="../../programas/reporte_avanzado.php" method="GET" target="reporteFrame" class="report-form">
+  <label>Tipo de reporte</label>
+  <select name="tipo" class="login-input">
+    <option value="consolidado">Consolidado</option>
+    <option value="detallado">Detallado</option>
+  </select>
+
   <label>Fecha inicio</label>
   <input type="date" name="inicio" class="login-input">
 
@@ -43,11 +50,16 @@
   <button type="submit" class="login-btn">Generar reporte</button>
 </form>
 
+<div class="admin-actions" style="margin-top:20px;">
+  <button id="guardarVistaBtn" type="button" class="buttonplace">Guardar vista previa en PDF</button>
+  <a href="../../programas/exportar_excel.php" target="_blank" class="buttonplace">Exportar a Excel</a>
+</div>
+
 
 
 <section style="margin-top:20px;">
   <h2>Vista previa del reporte</h2>
-  <iframe id="reporteFrame" name="reporteFrame" src="../../programas/reporte_avanzado.php" style="width:100%;height:650px;border:1px solid #ddd;"></iframe>
+  <iframe id="reporteFrame" name="reporteFrame" src="../../programas/reporte_avanzado.php" class="admin-iframe" style="height:650px;" width="100%"></iframe>
 </section>
 
 <br>
@@ -59,26 +71,36 @@
 <script>
   const form = document.querySelector('.report-form');
   const iframe = document.getElementById('reporteFrame');
-  const exportLink = document.querySelector('.report-actions a[target="_blank"]');
+  const guardarVistaBtn = document.getElementById('guardarVistaBtn');
+  const exportExcelLink = document.querySelector('.admin-actions a[href*="excel"]');
 
-  function updateLinks(inicio, fin){
+  function updateLinks(tipo, inicio, fin){
     let query = [];
+    if (tipo) query.push('tipo='+encodeURIComponent(tipo));
     if (inicio) query.push('inicio='+encodeURIComponent(inicio));
     if (fin) query.push('fin='+encodeURIComponent(fin));
     const queryString = query.length ? '?' + query.join('&') : '';
     iframe.src = '../../programas/reporte_avanzado.php' + queryString;
-    exportLink.href = '../../programas/exportar_pdf_avanzado.php' + queryString;
+    exportExcelLink.href = '../../programas/exportar_excel.php' + queryString;
   }
+
+  guardarVistaBtn.addEventListener('click', function(){
+    const frameWindow = iframe.contentWindow;
+    if (!frameWindow) return;
+    frameWindow.focus();
+    frameWindow.print();
+  });
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
+    const tipo = this.tipo.value;
     const inicio = this.inicio.value;
     const fin = this.fin.value;
-    updateLinks(inicio, fin);
+    updateLinks(tipo, inicio, fin);
   });
 
-  // Inicializar con valores del iframe y export
-  updateLinks('','');
+  // Inicializar con valores por defecto
+  updateLinks('consolidado','','');
 </script>
 
 </body>

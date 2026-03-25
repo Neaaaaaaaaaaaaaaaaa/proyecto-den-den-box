@@ -23,7 +23,7 @@
     </a>
     <nav class="nav-links">
         <a href="../index_residente.html">Inicio</a>
-        <a href="../servicios_residente.html">Servicios</a>
+        
       <a href="../login.html" class="btn-login">Cerrar Sesión</a>
     </nav>
   </div>
@@ -34,9 +34,9 @@
   <p>Completa los datos para registrar una nueva petición, queja o reclamo.</p>
 
   <div style="margin-top:20px; max-width:600px; background:white; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06);">
-    <form>
+    <form action="../../programas/guardar_pqrs.php" method="POST">
       <label>Tipo de PQRS</label>
-      <select style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+      <select name="tipo" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
         <option>Petición</option>
         <option>Queja</option>
         <option>Reclamo</option>
@@ -44,12 +44,12 @@
       </select>
 
       <label>Asunto</label>
-      <input type="text" placeholder="Asunto de la novedad" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+      <input type="text" name="asunto" placeholder="Asunto de la novedad" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;" required>
 
       <label>Descripción</label>
       <textarea name="descripcion" required style="width:100%;height:120px;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:14px;resize: vertical;max-width: 100%;"></textarea>
 
-      <button style="background:var(--primary);color:white;padding:10px 14px;border:none;border-radius:8px;font-weight:700;">
+      <button type="submit" style="background:var(--primary);color:white;padding:10px 14px;border:none;border-radius:8px;font-weight:700;">
         Registrar PQRS
       </button>
     </form>

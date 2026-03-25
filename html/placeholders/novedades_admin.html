@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Novedades - Admin</title>
+<link rel="shortcut icon" href="../../img/warzone.svg" type="image/x-icon">
+<link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container navbar">
+    <a class="brand" href="../index_admin.html">
+      <img src="../../img/logo.png" alt="Logo">
+      <div>
+        <div class="title">Den Den Box</div>
+        <div class="subtitle">Novedades reportadas</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="../index_admin.html">Inicio</a>
+      <a href="../admin_dashboard.html">Dashboard admin</a>
+      <a href="../crear.html">Crear usuario</a>
+      <a href="../gestionar_usuarios.html">Gestionar usuarios</a>
+      <a href="../login.html" class="btn-login">Cerrar Sesión</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container admin-main">
+  <h1>Novedades de operador y residente</h1>
+  <p>Consulta las novedades registradas y filtra por origen, fechas o texto.</p>
+
+  <form id="filtrosNovedades" class="admin-actions" style="margin-top:14px;">
+    <div>
+      <label for="origen">Origen</label>
+      <select id="origen" name="origen" class="login-input" style="margin-bottom:0; min-width:180px;">
+        <option value="">Todos</option>
+        <option value="2">Operador</option>
+        <option value="3">Residente</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="inicio">Desde</label>
+      <input id="inicio" type="date" name="inicio" class="login-input" style="margin-bottom:0; min-width:170px;">
+    </div>
+
+    <div>
+      <label for="fin">Hasta</label>
+      <input id="fin" type="date" name="fin" class="login-input" style="margin-bottom:0; min-width:170px;">
+    </div>
+
+    <div style="flex:1; min-width:240px;">
+      <label for="q">Buscar</label>
+      <input id="q" type="text" name="q" class="login-input" placeholder="Descripción, nombre, categoría o inmueble" style="margin-bottom:0;">
+    </div>
+
+    <button type="submit" class="login-btn" style="margin-bottom:0;">Aplicar filtros</button>
+    <button type="button" id="limpiar" class="buttonplace secondary">Limpiar</button>
+  </form>
+
+  <section style="margin-top:20px;">
+    <iframe id="novedadesFrame" name="novedadesFrame" src="../../programas/listar_novedades_admin.php" class="admin-iframe" style="height:450px;" width="100%"></iframe>
+  </section>
+
+  <br>
+  <a href="../admin_dashboard.html" class="buttonplace">Volver</a>
+</main>
+
+<script>
+(function(){
+  const form = document.getElementById('filtrosNovedades');
+  const iframe = document.getElementById('novedadesFrame');
+  const limpiar = document.getElementById('limpiar');
+
+  function construirQuery(){
+    const params = new URLSearchParams();
+    const origen = form.origen.value;
+    const inicio = form.inicio.value;
+    const fin = form.fin.value;
+    const q = form.q.value.trim();
+
+    if (origen) params.set('origen', origen);
+    if (inicio) params.set('inicio', inicio);
+    if (fin) params.set('fin', fin);
+    if (q) params.set('q', q);
+
+    return params.toString();
+  }
+
+  function aplicar(){
+    const query = construirQuery();
+    iframe.src = '../../programas/listar_novedades_admin.php' + (query ? ('?' + query) : '');
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    aplicar();
+  });
+
+  limpiar.addEventListener('click', function(){
+    form.reset();
+    aplicar();
+  });
+})();
+</script>
+
+</body>
+</html>

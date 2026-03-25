@@ -21,16 +21,49 @@
 
     <nav class="nav-links">
       <a href="../index_admin.html">Inicio</a>
+	  <a href="../admin_dashboard.html">Dashboard admin</a>
+	  <a href="../crear.html">Crear usuario</a>
+	  <a href="../gestionar_usuarios.html">Gestionar usuarios</a>
       <a href="../login.html" class="btn-login">Cerrar Sesión</a>
     </nav>
   </div>
 </header>
 
-<main class="container" style="padding-top:22px;">
+<main class="container admin-main">
   <h1>Pagos</h1>
   <p>Consulta estados de cuenta, pagos realizados y saldos pendientes por inmueble (actualización cada 30s).</p>
 
-  <iframe name="realtimeFrame" src="../../programas/pagos_realtime.php" style="width:100%; height:520px; border:1px solid #ccc; border-radius:8px;"></iframe>
+  <div class="admin-panel" style="padding:14px;">
+    <h2 style="margin-bottom:8px;">Filtrar pagos</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:end;">
+      <div>
+        <label for="torre">Torre</label><br>
+        <select id="torre" class="login-input" style="min-width:180px;margin-bottom:0;">
+          <option value="">Todas</option>
+        </select>
+      </div>
+      <div>
+        <label for="id_inmueble">Inmueble</label><br>
+        <select id="id_inmueble" class="login-input" style="min-width:240px;margin-bottom:0;">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div>
+        <label for="inicio">Fecha inicio</label><br>
+        <input id="inicio" type="date" class="login-input" style="min-width:180px;margin-bottom:0;">
+      </div>
+      <div>
+        <label for="fin">Fecha fin</label><br>
+        <input id="fin" type="date" class="login-input" style="min-width:180px;margin-bottom:0;">
+      </div>
+      <button id="btnAplicar" type="button" class="buttonplace">Aplicar filtros</button>
+      <button id="btnLimpiar" type="button" class="buttonplace secondary">Limpiar</button>
+      <button id="btnVistaPdf" type="button" class="buttonplace accent">Guardar vista previa en PDF</button>
+      <a id="btnExcelPagos" href="../../programas/exportar_pagos_excel.php" target="_blank" class="buttonplace">Exportar pagos Excel</a>
+    </div>
+  </div>
+
+  <iframe id="realtimeFrame" name="realtimeFrame" src="../../programas/pagos_realtime.php" class="admin-iframe" style="height:520px;" width="100%"></iframe>
 
 
     <div>
@@ -38,6 +71,109 @@
     </div>
   <section class="footer">© 2025 Den Den Box — Proyecto SENA</section>
 </main>
+
+<script>
+  const inicioInput = document.getElementById('inicio');
+  const finInput = document.getElementById('fin');
+  const torreSelect = document.getElementById('torre');
+  const inmuebleSelect = document.getElementById('id_inmueble');
+  const iframe = document.getElementById('realtimeFrame');
+  const btnAplicar = document.getElementById('btnAplicar');
+  const btnLimpiar = document.getElementById('btnLimpiar');
+  const btnVistaPdf = document.getElementById('btnVistaPdf');
+  const excelLink = document.getElementById('btnExcelPagos');
+
+  function buildQuery() {
+    const torre = torreSelect.value;
+    const idInmueble = inmuebleSelect.value;
+    const inicio = inicioInput.value;
+    const fin = finInput.value;
+    const q = [];
+    if (torre) q.push('torre=' + encodeURIComponent(torre));
+    if (idInmueble) q.push('id_inmueble=' + encodeURIComponent(idInmueble));
+    if (inicio) q.push('inicio=' + encodeURIComponent(inicio));
+    if (fin) q.push('fin=' + encodeURIComponent(fin));
+    return q.length ? ('?' + q.join('&')) : '';
+  }
+
+  function updateExportLinks() {
+    const qs = buildQuery();
+    excelLink.href = '../../programas/exportar_pagos_excel.php' + qs;
+  }
+
+  function applyFilters() {
+    const qs = buildQuery();
+    iframe.src = '../../programas/pagos_realtime.php' + qs;
+    updateExportLinks();
+  }
+
+  async function cargarTorres() {
+    try {
+      const resp = await fetch('../../programas/documentos_torres.php');
+      const data = await resp.json();
+      torreSelect.innerHTML = '<option value="">Todas</option>';
+      (data.torres || []).forEach(t => {
+        const op = document.createElement('option');
+        op.value = t.nombre;
+        op.textContent = t.nombre;
+        torreSelect.appendChild(op);
+      });
+    } catch (_) {
+      torreSelect.innerHTML = '<option value="">No disponible</option>';
+    }
+  }
+
+  async function cargarInmuebles() {
+    const torre = torreSelect.value;
+    const url = torre
+      ? `../../programas/documentos_inmuebles.php?torre=${encodeURIComponent(torre)}`
+      : '../../programas/documentos_inmuebles.php';
+    try {
+      const resp = await fetch(url);
+      const data = await resp.json();
+      inmuebleSelect.innerHTML = '<option value="">Todos</option>';
+      (data.inmuebles || []).forEach(i => {
+        const op = document.createElement('option');
+        op.value = i.id_inmueble;
+        op.textContent = `ID ${i.id_inmueble} - Torre ${i.torre} - Apto ${i.numero}`;
+        inmuebleSelect.appendChild(op);
+      });
+    } catch (_) {
+      inmuebleSelect.innerHTML = '<option value="">No disponible</option>';
+    }
+  }
+
+  torreSelect.addEventListener('change', async () => {
+    await cargarInmuebles();
+    updateExportLinks();
+  });
+  inmuebleSelect.addEventListener('change', updateExportLinks);
+  inicioInput.addEventListener('change', updateExportLinks);
+  finInput.addEventListener('change', updateExportLinks);
+  btnAplicar.addEventListener('click', applyFilters);
+  btnLimpiar.addEventListener('click', async () => {
+    torreSelect.value = '';
+    inicioInput.value = '';
+    finInput.value = '';
+    await cargarInmuebles();
+    applyFilters();
+  });
+
+  btnVistaPdf.addEventListener('click', () => {
+    try {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    } catch (_) {
+      alert('No se pudo abrir la impresión de la vista previa.');
+    }
+  });
+
+  (async () => {
+    await cargarTorres();
+    await cargarInmuebles();
+    updateExportLinks();
+  })();
+</script>
 
 </body>
 </html>

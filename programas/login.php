@@ -19,6 +19,16 @@ if(mysqli_num_rows($resultado) > 0){
 
     $datos = mysqli_fetch_assoc($resultado);
 
+    $estado_usuario = isset($datos['estado']) ? trim((string)$datos['estado']) : '';
+    $usuario_activo = ($estado_usuario === '1' || strcasecmp($estado_usuario, 'Activo') === 0);
+
+    if(!$usuario_activo){
+        session_unset();
+        session_destroy();
+        header("Location: ../html/index.html");
+        exit();
+    }
+
     $_SESSION['correo'] = $datos['correo'];
     $_SESSION['rol'] = $datos['id_rol'];
     $_SESSION['id_persona'] = $datos['id_persona'];
@@ -60,18 +70,22 @@ if(mysqli_num_rows($resultado) > 0){
 
     if($datos['id_rol'] == 1){
     header("Location: ../html/index_admin.html");
+    exit();
     }
 
     elseif($datos['id_rol'] == 2){
         header("Location: ../html/index_operador.html");
+        exit();
     }
 
     elseif($datos['id_rol'] == 3){
         header("Location: ../html/index_residente.html");
+        exit();
     }
 
     elseif($datos['id_rol'] == 4){
         header("Location: ../html/index_propietario.html");
+        exit();
     }
 
 }

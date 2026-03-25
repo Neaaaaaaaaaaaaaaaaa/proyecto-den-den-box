@@ -9,22 +9,62 @@
 <link rel="stylesheet" href="../css/style.css">
 
 <script>
-let contador = 0;
+let adultosCount = 0;
+let menoresCount = 0;
 
-function agregarPersona() {
-    const contenedor = document.getElementById("personas_container");
-
+function agregarAdulto() {
+    const contenedor = document.getElementById("adultos_container");
     const div = document.createElement("div");
-    div.style.marginBottom = "12px";
-
-    div.innerHTML = `
-        <input type="text" name="personas[${contador}][nombre]" placeholder="Nombre persona" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:6px;">
-        <input type="number" name="personas[${contador}][edad]" placeholder="Edad" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;">
-    `;
-
+    div.style.marginBottom = "8px";
+    div.innerHTML = '<input type="text" name="adultos[]" placeholder="Nombre del adulto" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;">';
     contenedor.appendChild(div);
-    contador++;
+    adultosCount++;
+    document.getElementById("cantidad_adultos").textContent = adultosCount;
 }
+
+function agregarMenor() {
+    const contenedor = document.getElementById("menores_container");
+    const div = document.createElement("div");
+    div.style.marginBottom = "8px";
+    div.innerHTML = '<input type="text" name="menores[]" placeholder="Nombre del menor" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;">';
+    contenedor.appendChild(div);
+    menoresCount++;
+    document.getElementById("cantidad_menores").textContent = menoresCount;
+}
+
+async function cargarInmueblesPropietario() {
+    const select = document.getElementById("id_inmueble");
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Cargando inmuebles...</option>';
+
+    try {
+        const resp = await fetch("../programas/listar_inmuebles_propietario.php");
+        const data = await resp.json();
+
+        if (!data.ok) {
+            select.innerHTML = '<option value="">No autorizado</option>';
+            return;
+        }
+
+        if (!data.inmuebles || data.inmuebles.length === 0) {
+            select.innerHTML = '<option value="">No tienes inmuebles vinculados</option>';
+            return;
+        }
+
+        select.innerHTML = '<option value="">Seleccione inmueble</option>';
+        data.inmuebles.forEach((i) => {
+            const op = document.createElement("option");
+            op.value = i.id_inmueble;
+            op.textContent = `Torre ${i.torre} - Apto ${i.numero} (ID ${i.id_inmueble})`;
+            select.appendChild(op);
+        });
+    } catch (_) {
+        select.innerHTML = '<option value="">No se pudo cargar la lista</option>';
+    }
+}
+
+document.addEventListener("DOMContentLoaded", cargarInmueblesPropietario);
 </script>
 
 </head>
@@ -44,6 +84,8 @@ function agregarPersona() {
 
 <nav class="nav-links">
 <a href="index_propietario.html">Inicio</a>
+<a href="../html/placeholders/ver_comunicaciones_propietario.html">Comunicaciones</a>
+<a href="../html/placeholders/documentos_propietario.html">Documentos</a>
 <a href="propietario_crear.html" style="background:rgba(255,255,255,0.12);border-radius:8px;">Crear usuario</a>
 <a href="login.html" class="btn-login">Cerrar Sesión</a>
 </nav>
@@ -54,7 +96,7 @@ function agregarPersona() {
 <main class="container" style="padding-top:28px;">
 
 <h1>Crear usuario</h1>
-<p>Registrar un nuevo usuario del sistema.</p>
+<p>Registrar un nuevo residente en uno de tus inmuebles.</p>
 
 <div style="margin-top:20px; max-width:600px; background:white; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06);">
 
@@ -84,34 +126,35 @@ function agregarPersona() {
 
 <h2>Datos del inmueble</h2>
 
-<label>Numero de inmueble</label>
-<input type="number" name="num_inmueble" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+<p style="font-size:13px;color:#667085;margin:-6px 0 12px 0;">Solo puedes registrar residentes en inmuebles vinculados a tu perfil de propietario.</p>
 
-<label>Numero de torre</label>
-<select name="num_torre" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
-<option value="">Seleccione Torre</option>
-<option value="Alpha">Alpha</option>
-<option value="Bravo">Bravo</option>
-<option value="Charlie">Charlie</option>
-<option value="Delta">Delta</option>
+<label>Inmueble de tu propiedad</label>
+<select id="id_inmueble" name="id_inmueble" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
+<option value="">Cargando inmuebles...</option>
 </select>
 
-<label>Numero de parqueadero <small>(opcional)</small></label>
+<label>Número de parqueadero <small>(opcional)</small></label>
 <input type="number" name="parqueadero" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
-<label>Area del inmueble <small>(opcional)</small></label>
+<label>Área del inmueble <small>(opcional)</small></label>
 <input type="number" name="area" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
 <label>Profesion</label>
 <input type="text" name="profesion" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
-<h2>Personas que viven en el inmueble</h2>
+<h2>Personas en el inmueble</h2>
+<p style="font-size:13px;color:#667085;margin:-6px 0 14px 0;">
+    Agrega los nombres de adultos y menores asociados al apartamento.
+    Adultos: <strong id="cantidad_adultos">0</strong> | Menores: <strong id="cantidad_menores">0</strong>
+</p>
 
-<div id="personas_container"></div>
+<label>Adultos</label>
+<div id="adultos_container" style="margin-bottom:10px;"></div>
+<button type="button" onclick="agregarAdulto()" style="display:block;margin-bottom:14px;">+ Agregar adulto</button>
 
-<button type="button" onclick="agregarPersona()" style="margin-bottom:15px;">
-+ Agregar persona
-</button>
+<label style="display:block; margin-top:4px;">Menores</label>
+<div id="menores_container" style="margin-bottom:10px;"></div>
+<button type="button" onclick="agregarMenor()" style="display:block;margin-bottom:16px;">+ Agregar menor</button>
 
 <h2>Contacto de emergencia</h2>
 
@@ -144,7 +187,7 @@ function agregarPersona() {
 <input type="password" name="contrasena" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0d5dd;margin-bottom:12px;">
 
 <button type="submit" class="login-btn">
-Registrar usuario
+Registrar residente
 </button>
 
 </form>

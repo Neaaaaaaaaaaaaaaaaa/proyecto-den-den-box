@@ -12,6 +12,7 @@ if ($rol === null) {
 /* ===== FILTRO FECHAS ===== */
 $inicio = trim($_GET['inicio'] ?? '');
 $fin = trim($_GET['fin'] ?? '');
+$tipo = $_GET['tipo'] ?? 'consolidado';
 
 $validDate = function($d){
     return preg_match('/^\d{4}-\d{2}-\d{2}$/', $d) && strtotime($d) !== false;
@@ -59,7 +60,7 @@ $total_pagos = mysqli_fetch_assoc(mysqli_query($conexion,
 
 $moros = "SELECT COUNT(*) total FROM PAGOS WHERE estado_pago='Pendiente'";
 if ($filtro_pago !== '') {
-    $moros .= ($filtro_pago[1] === 'W') ? ' AND' : ' WHERE';
+    $moros .= ($filtro_pago[0] === 'W') ? ' AND ' : ' WHERE ';
     $moros .= str_replace('WHERE ', '', $filtro_pago);
 }
 $morosos = mysqli_fetch_assoc(mysqli_query($conexion, $moros))['total'] ?? 0;
@@ -86,10 +87,18 @@ $total_documentos = mysqli_fetch_assoc(mysqli_query($conexion,
 "SELECT COUNT(*) total FROM DOCUMENTOS"))['total'] ?? 0;
 
 /* ===== KPI PAGOS ADICIONAL ===== */
-$pagos_recaudados = mysqli_fetch_assoc(mysqli_query($conexion,
-"SELECT COALESCE(SUM(valor),0) total FROM PAGOS WHERE estado_pago='Pagado' $filtro_pago"))['total'] ?? 0;
-$pagos_pendientes = mysqli_fetch_assoc(mysqli_query($conexion,
-"SELECT COUNT(*) total FROM PAGOS WHERE estado_pago='Pendiente' $filtro_pago"))['total'] ?? 0;
+$pagos_recaudados_query = "SELECT COALESCE(SUM(valor),0) total FROM PAGOS WHERE estado_pago='Pagado'";
+if ($filtro_pago !== '') {
+    $pagos_recaudados_query .= ' AND ' . str_replace('WHERE ', '', $filtro_pago);
+}
+$pagos_recaudados = mysqli_fetch_assoc(mysqli_query($conexion, $pagos_recaudados_query))['total'] ?? 0;
+
+$pagos_pendientes_query = "SELECT COUNT(*) total FROM PAGOS WHERE estado_pago='Pendiente'";
+if ($filtro_pago !== '') {
+    $pagos_pendientes_query .= ' AND ' . str_replace('WHERE ', '', $filtro_pago);
+}
+$pagos_pendientes = mysqli_fetch_assoc(mysqli_query($conexion, $pagos_pendientes_query))['total'] ?? 0;
+
 $pagos_total = mysqli_fetch_assoc(mysqli_query($conexion,
 "SELECT COUNT(*) total FROM PAGOS $filtro_pago"))['total'] ?? 0;
 
@@ -237,9 +246,33 @@ $porcentaje = ($t['total_inmuebles']>0)
 
 <br>
 
-<br>
+<?php if ($tipo == 'detallado') { ?>
+<h2>Detalle de Pagos</h2>
+<table class="residentes-table">
+<tr><th>ID Pago</th><th>Valor</th><th>Estado</th><th>Fecha</th></tr>
+<?php
+$query = "SELECT id_pago, valor, estado_pago, fecha_pago FROM PAGOS $filtro_pago ORDER BY fecha_pago DESC LIMIT 100";
+$result = mysqli_query($conexion, $query);
+while ($row = mysqli_fetch_assoc($result)) {
+    echo "<tr><td>{$row['id_pago']}</td><td>" . number_format($row['valor'], 2) . "</td><td>{$row['estado_pago']}</td><td>{$row['fecha_pago']}</td></tr>";
+}
+?>
+</table>
 
-<a href="exportar_pdf_avanzado.php" class="buttonplace">Exportar PDF</a>
+<h2>Detalle de Novedades</h2>
+<table class="residentes-table">
+<tr><th>ID</th><th>Asunto</th><th>Fecha</th><th>Estado</th></tr>
+<?php
+$query = "SELECT id_novedad, asunto, fecha_reporte, estado FROM NOVEDAD $filtro_novedad ORDER BY fecha_reporte DESC LIMIT 100";
+$result = mysqli_query($conexion, $query);
+while ($row = mysqli_fetch_assoc($result)) {
+    echo "<tr><td>{$row['id_novedad']}</td><td>{$row['asunto']}</td><td>{$row['fecha_reporte']}</td><td>{$row['estado']}</td></tr>";
+}
+?>
+</table>
+<?php } ?>
+
+<br>
 
 <br><br>
 
