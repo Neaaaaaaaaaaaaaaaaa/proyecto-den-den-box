@@ -206,6 +206,24 @@ CREATE TABLE EVIDENCIAS_DE_NOVEDAD (
 );
 
 -- =========================
+-- TABLA TAREAS
+-- =========================
+CREATE TABLE IF NOT EXISTS tareas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(200) NOT NULL,
+    descripcion TEXT NOT NULL,
+    rol VARCHAR(50) NOT NULL,
+    estado ENUM('Activo', 'Pendiente', 'Finalizado') DEFAULT 'Activo',
+    prioridad ENUM('Baja', 'Media', 'Alta', 'Urgente') DEFAULT 'Media',
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_vencimiento DATE NOT NULL,
+    INDEX idx_rol (rol),
+    INDEX idx_estado (estado),
+    INDEX idx_fecha_vencimiento (fecha_vencimiento)
+);
+
+
+-- =========================
 -- TABLA PAGOS
 -- =========================
 CREATE TABLE PAGOS (
@@ -626,3 +644,17 @@ INSERT INTO PAGOS (id_inmueble,fecha_pago,valor,estado_pago,metodo_pago) VALUES
 INSERT INTO NOTIFICACIONES (id_usuario,mensaje,tipo,leida,fecha_envio) VALUES
 (5,'Su reporte fue recibido','Sistema','No','2025-01-01'),
 (2,'Nueva novedad asignada','Sistema','No','2025-01-01');
+
+
+-- =========================
+-- DATOS DE EJEMPLO PARA TAREAS
+-- =========================
+INSERT INTO tareas (titulo, descripcion, rol, estado, prioridad, fecha_vencimiento) VALUES
+('Revisar paquetes pendientes', 'Verificar y clasificar todos los paquetes que llegaron en el turno', 'Operador', 'Activo', 'Alta', '2026-03-27'),
+('Registrar comunicación', 'Registrar la comunicación importante para los residentes del edificio', 'Operador', 'Activo', 'Media', '2026-03-28'),
+('Mantenimiento de ascensor', 'Realizar revisión preventiva del ascensor principal', 'Operador', 'Pendiente', 'Urgente', '2026-03-26'),
+('Limpieza de áreas comunes', 'Limpiar y organizar los pasillos del piso 3', 'Operador', 'Pendiente', 'Media', '2026-03-27'),
+('Entrega de correspondencia', 'Distribuir la correspondencia en los buzones correspondientes', 'Operador', 'Finalizado', 'Baja', '2026-03-25'),
+('Reporte de incidentes', 'Documentar los incidentes del día y enviar al administrador', 'Operador', 'Activo', 'Alta', '2026-03-27'),
+('Verificar illuminación común', 'Revisar que las luces de áreas comunes estén funcionando', 'Operador', 'Finalizado', 'Baja', '2026-03-25');
+
