@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Recuperar Contraseña - Den Den Box</title>
+  <link rel="shortcut icon" href="../../img/warzone.svg" type="image/x-icon">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container navbar">
+    <a class="brand" href="index.html">
+      <img src="../../img/logo.png" alt="Den Den Box">
+      <div>
+        <div class="title">Den Den Box</div>
+        <div class="subtitle">Recuperar acceso</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="login.html" class="btn-login">Iniciar Sesion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container page-center">
+
+  <h1 class="page-title-centered">Olvide mi contraseña</h1>
+
+  <div class="auth-card">
+
+    <p class="form-note mb-14">
+      Ingresa el correo registrado. Si existe en el sistema, podras definir una nueva contraseña.
+    </p>
+
+    <form action="../../programas/auth/recuperar_contrasena.php" method="POST">
+      <input type="hidden" name="accion" value="verificar_correo">
+
+      <label class="login-label">Correo</label>
+      <input type="email" class="login-input" name="correo" required>
+
+      <br><br>
+
+      <input type="submit" class="login-btn" value="Verificar correo">
+    </form>
+
+    <div class="auth-link-row">
+      <a href="login.html" class="auth-link">Volver a iniciar sesion</a>
+    </div>
+  </div>
+</main>
+
+<section class="footer">© 2025 Den Den Box - Proyecto SENA</section>
+
+</body>
+</html>

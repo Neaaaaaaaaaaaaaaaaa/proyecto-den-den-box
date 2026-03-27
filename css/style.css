@@ -13,6 +13,22 @@ html,body { height: 100%; font-family: Inter, "Segoe UI", Roboto, Arial, sans-se
 
 .buttonplace {background:var(--primary);color:white;padding:10px 15px; margin-top: 10px; display: inline-block;text-decoration:none;border:none;border-radius:8px;font-weight:700}
 
+.buttonplace,
+.login-btn {
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.buttonplace:hover,
+.login-btn:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 8px 18px rgba(31, 111, 235, 0.18);
+}
+
+.buttonplace:active,
+.login-btn:active {
+  transform: translateY(1px);
+}
+
 .container { max-width:1200px; margin: 0 auto; padding: 16px; }
 
 .header {
@@ -120,6 +136,13 @@ html,body { height: 100%; font-family: Inter, "Segoe UI", Roboto, Arial, sans-se
     border-radius: 8px;
     border: 1px solid #d0d5dd;
     margin-bottom: 12px;
+  background: #fff;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #84b8ff;
+  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.15);
 }
 
 .login-btn {
@@ -145,7 +168,6 @@ html,body { height: 100%; font-family: Inter, "Segoe UI", Roboto, Arial, sans-se
 
 .tabla-dashboard th,
 .tabla-dashboard td {
-  white-space: nowrap;
   text-align: center;
   border: 1px solid #ddd; 
 }
@@ -357,9 +379,229 @@ html,body { height: 100%; font-family: Inter, "Segoe UI", Roboto, Arial, sans-se
 
 .admin-actions {
   display:flex;
-  flex-wrap:wrap;
   gap:10px;
   align-items:end;
+}
+
+.page-center {
+  min-height: calc(100vh - 160px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-title-centered {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  padding: 22px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.auth-link-row {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.auth-link {
+  color: #0b6bcb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.form-page {
+  padding-top: 28px;
+}
+
+.form-card {
+  margin-top: 20px;
+  max-width: 600px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.form-note {
+  font-size: 13px;
+  color: #667085;
+}
+
+.form-note-tight {
+  margin: -6px 0 12px 0;
+}
+
+.form-note-tight-lg {
+  margin: -6px 0 14px 0;
+}
+
+.radio-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.radio-row label {
+  margin: 0;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mb-8 {
+  margin-bottom: 8px;
+}
+
+.mb-12 {
+  margin-bottom: 12px;
+}
+
+.mb-14 {
+  margin-bottom: 14px;
+}
+
+.mb-16 {
+  margin-bottom: 16px;
+}
+
+.mt-4 {
+  margin-top: 4px;
+}
+
+.mt-8 {
+  margin-top: 8px;
+}
+
+.mt-12 {
+  margin-top: 12px;
+}
+
+.mt-14 {
+  margin-top: 14px;
+}
+
+.mt-18 {
+  margin-top: 18px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mt-60 {
+  margin-top: 60px;
+}
+
+.input-min-170 {
+  min-width: 170px;
+}
+
+.input-min-180 {
+  min-width: 180px;
+}
+
+.input-min-240 {
+  min-width: 240px;
+}
+
+.flex-grow {
+  flex: 1;
+}
+
+.section-top {
+  margin-top: 18px;
+}
+
+.section-title {
+  margin-bottom: 8px;
+}
+
+.card-link-inherit {
+  text-decoration: none;
+  color: inherit;
+}
+
+.iframe-h-420 {
+  height: 420px;
+}
+
+.iframe-h-460 {
+  height: 460px;
+}
+
+.iframe-h-520 {
+  height: 520px;
+}
+
+.iframe-h-560 {
+  height: 560px;
+}
+
+.iframe-h-650 {
+  height: 650px;
+}
+
+.iframe-h-72vh {
+  height: 72vh;
+  min-height: 560px;
+}
+
+.admin-panel-compact {
+  padding: 14px;
+}
+
+.file-input-spaced {
+  margin: 8px 0 12px 0;
+}
+
+.textarea-standard {
+  height: 120px;
+  resize: vertical;
+  max-width: 100%;
+}
+
+.dashboard-embed {
+  width: 100%;
+  border: 0;
+  min-height: 460px;
+  margin-bottom: 16px;
+}
+
+.report-form {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  align-items: end;
+  background: #ffffff;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.05);
+}
+
+.report-form label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #344054;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.report-form .buttonplace,
+.report-form .login-btn {
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .buttonplace.secondary {
@@ -422,7 +664,7 @@ html,body { height: 100%; font-family: Inter, "Segoe UI", Roboto, Arial, sans-se
   .app { flex-direction:column; }
   .sidebar { width:100%; position:relative; top:0; display:flex; flex-direction:row; overflow:auto; gap:8px; padding:8px; }
   .sidebar .nav { flex-direction:row; }
-  .sidebar .nav a { white-space:nowrap; padding:8px 10px; font-size:0.9rem; }
+  .sidebar .nav a { padding:8px 10px; font-size:0.9rem; }
   .kpi-row { flex-direction:column; }
 }
 

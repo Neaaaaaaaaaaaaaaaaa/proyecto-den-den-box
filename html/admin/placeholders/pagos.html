@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pagos — Den Den Box</title>
+  <link rel="shortcut icon" href="../../../img/warzone.svg" type="image/x-icon">
+<link rel="stylesheet" href="../../../css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container navbar">
+    <a class="brand" href="../index_admin.html">
+      <img src="../../../img/logo.png">
+      <div>
+        <div class="title">Den Den Box</div>
+        <div class="subtitle">Pagos</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="../index_admin.html">Inicio</a>
+	  <a href="../admin_dashboard.html">Dashboard admin</a>
+	  <a href="../crear.html">Crear usuario</a>
+	  <a href="../gestionar_usuarios.html">Gestionar usuarios</a>
+      <a href="../../../programas/auth/logout.php" class="btn-login">Cerrar Sesión</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container admin-main">
+  <h1>Pagos</h1>
+  <p>Consulta estados de cuenta, pagos realizados y saldos pendientes por inmueble (actualización cada 30s).</p>
+
+  <div class="admin-panel admin-panel-compact">
+    <h2 class="section-title">Filtrar pagos</h2>
+    <form method="GET" action="../../../programas/admin/pagos_realtime.php" target="realtimeFrame" class="admin-actions">
+      <div>
+        <label for="torre">Torre</label><br>
+        <input id="torre" name="torre" type="text" class="login-input input-min-180 mb-0" placeholder="Alpha, Bravo...">
+      </div>
+      <div>
+        <label for="id_inmueble">Inmueble</label><br>
+        <input id="id_inmueble" name="id_inmueble" type="number" class="login-input input-min-240 mb-0" placeholder="101, 202...">
+      </div>
+      <div>
+        <label for="inicio">Fecha inicio</label><br>
+        <input id="inicio" name="inicio" type="date" class="login-input input-min-180 mb-0">
+      </div>
+      <div>
+        <label for="fin">Fecha fin</label><br>
+        <input id="fin" name="fin" type="date" class="login-input input-min-180 mb-0">
+      </div>
+      <button type="submit" class="buttonplace">Aplicar filtros</button>
+      <a href="../../../programas/admin/pagos_realtime.php" target="realtimeFrame" class="buttonplace secondary">Limpiar</a>
+    </form>
+
+  </div>
+
+  <iframe id="realtimeFrame" name="realtimeFrame" src="../../../programas/admin/pagos_realtime.php" class="admin-iframe" style="height:520px;" width="100%"></iframe>
+
+
+    <div>
+        <a href="../admin_dashboard.html" class="buttonplace">Volver</a>
+    </div>
+  <section class="footer">© 2025 Den Den Box — Proyecto SENA</section>
+</main>
+
+</body>
+</html>

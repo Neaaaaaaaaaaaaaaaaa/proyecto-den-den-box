@@ -1,0 +1,219 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Crear Usuario — Den Den Box</title>
+
+<link rel="shortcut icon" href="../../img/warzone.svg">
+<link rel="stylesheet" href="../../css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+<div class="container navbar">
+
+<a class="brand" href="index_admin.html">
+<img src="../../img/logo.png">
+<div>
+<div class="title">Den Den Box</div>
+<div class="subtitle">Admin - crear usuario</div>
+</div>
+</a>
+
+<nav class="nav-links">
+<a href="index_admin.html">Inicio</a>
+<a href="admin_dashboard.html">Dashboard admin</a>
+<a href="crear.html" class="is-active">Crear usuario</a>
+<a href="gestionar_usuarios.html">Gestionar usuarios</a>
+<a href="../../programas/auth/logout.php" class="btn-login">Cerrar Sesion</a>
+</nav>
+
+</div>
+</header>
+
+<main class="container admin-main">
+
+<h1>Crear usuario</h1>
+<p>Registrar o actualizar un usuario del sistema y asignarlo a un inmueble ya creado.</p>
+
+<div class="admin-panel form-card">
+
+<form action="../../programas/admin/guardar_usuario.php" method="POST">
+
+<label>Nombre Completo</label>
+<input type="text" name="nombre" placeholder="Nombre Completo" required class="login-input">
+
+
+<label>Tipo de documento</label>
+<select name="documento" required class="login-input">
+<option >CC </option>
+<option >TI</option>
+<option >CÉDULA DE EXTRANJERÍA</option>
+<option >PASAPORTE</option>
+
+</select>
+
+<label>Número de documento</label>
+<input type="number" name="num_doc" required class="login-input">
+
+
+<label>Número de teléfono</label>
+<input type="number" name="num_tlf" required class="login-input">
+
+
+
+<label>Número de inmueble existente</label>
+<input type="number" name="num_inmueble" required class="login-input">
+
+
+
+
+<label>Torre del inmueble existente</label>
+<select name="num_torre" required class="login-input">
+    <option value="">Seleccione Torre</option>
+    <option value="Alpha">Alpha</option>
+    <option value="Bravo">Bravo</option>
+    <option value="Charlie">Charlie</option>
+    <option value="Delta">Delta</option>
+</select>
+
+<p class="form-note form-note-tight-lg">Este formulario no crea inmuebles nuevos. Solo asigna el usuario al inmueble que ya exista en la base de datos.</p>
+
+
+
+
+
+<label>Número de parqueadero <small>(opcional)</small></label>
+<input type="number" name="parqueadero" class="login-input">
+
+
+
+
+
+<label>Área del inmueble <small>(opcional)</small></label>
+<input type="number" name="area" class="login-input">
+
+
+
+
+<label>Rol</label>
+<select name="rol" required class="login-input" id="rol_select" onchange="actualizarCamposRol()">
+<option value="3">Residente</option>
+<option value="2">Operador</option>
+<option value="4">Propietario</option>
+</select>
+
+<div id="cargo_operador" style="display:none;">
+<label>Cargo</label>
+<input type="text" name="cargo" placeholder="Ej: Técnico, Supervisor, Vigilante" class="login-input">
+</div>
+
+<div class="mb-12">
+<label>Si es propietario, ¿va a ocupar el inmueble como residente?</label>
+<div class="radio-row">
+<label><input type="radio" name="propietario_ocupa_inmueble" value="1"> Sí</label>
+<label><input type="radio" name="propietario_ocupa_inmueble" value="0" checked> No</label>
+</div>
+<p class="form-note mt-8">Si eliges "Sí", el sistema lo registrará también como residente del mismo inmueble.</p>
+</div>
+
+
+
+<label>Profesión</label>
+<input type="text" name="profesion" placeholder="" required class="login-input">
+
+        <h2>Personas en el inmueble</h2>
+        <p class="form-note form-note-tight-lg">
+            Registra hasta 3 adultos y 3 menores asociados al apartamento.
+        </p>
+
+        <label>Adultos</label>
+        <input type="text" name="adultos[]" placeholder="Nombre del adulto 1" class="login-input mb-8">
+        <input type="text" name="adultos[]" placeholder="Nombre del adulto 2" class="login-input mb-8">
+        <input type="text" name="adultos[]" placeholder="Nombre del adulto 3" class="login-input mb-14">
+
+        <label class="mt-4">Menores</label>
+        <input type="text" name="menores[]" placeholder="Nombre del menor 1" class="login-input mb-8">
+        <input type="text" name="menores[]" placeholder="Nombre del menor 2" class="login-input mb-8">
+        <input type="text" name="menores[]" placeholder="Nombre del menor 3" class="login-input mb-16">
+
+
+
+    <h2 >Contacto de emergencia</h2>
+
+
+<!-- este va en tabla contacto_de_emergencia -->
+<label>Nombre Completo contacto de emergencia</label>
+
+<input type="text" name="nombre_emergencia" placeholder="Nombre Completo" required class="login-input">
+
+
+
+<label>Número de teléfono</label>
+<input type="number" name="num_tlf_emergencia" required class="login-input">
+
+
+<label>Relación</label>
+<input type="text" name="relacion" placeholder="Nombre Completo" required class="login-input">
+
+    <h2 >Mascota <small>(opcional)</small></h2>
+
+<!-- este va ne tabla mascotas -->
+<label >Tipo </small></label>
+<input type="text" name="tipo_mascota" placeholder="Nombre Completo" class="login-input">
+
+
+
+<label>Raza </label>
+<input type="text" name="raza" placeholder="Nombre Completo" class="login-input">
+
+
+
+<label>Cantidad </label>
+<input type="number" name="cantidad_mascota" placeholder="Nombre Completo" class="login-input">
+
+    <h2 >Credenciales</h2>
+
+
+<label>Correo</label>
+<input type="email" name="correo" placeholder="Correo electrónico" required class="login-input">
+
+<label>Contraseña</label>
+<input type="password" name="contrasena" placeholder="Contraseña" required class="login-input">
+
+
+
+
+<button type="submit" class="login-btn">
+Registrar usuario
+</button>
+
+</form>
+
+</div>
+
+</main>
+
+<section class="footer">© 2025 Den Den Box — Proyecto SENA</section>
+
+<script>
+function actualizarCamposRol() {
+  const rol = document.getElementById('rol_select').value;
+  const cargoDiv = document.getElementById('cargo_operador');
+  
+  if (rol === '2') {
+    cargoDiv.style.display = 'block';
+  } else {
+    cargoDiv.style.display = 'none';
+  }
+}
+
+// Ejecutar al cargar la página por si el formulario viene lleno
+window.addEventListener('DOMContentLoaded', actualizarCamposRol);
+</script>
+
+</body>
+</html>

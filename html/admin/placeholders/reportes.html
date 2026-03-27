@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reportes — Den Den Box</title>
+<link rel="shortcut icon" href="../../../img/warzone.svg" type="image/x-icon">
+<link rel="stylesheet" href="../../../css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container navbar">
+    <a class="brand" href="../index_admin.html">
+      <img src="../../../img/logo.png" alt="Logo">
+      <div>
+        <div class="title">Den Den Box</div>
+        <div class="subtitle">Reportes</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="../index_admin.html">Inicio</a>
+      <a href="../admin_dashboard.html">Dashboard admin</a>
+      <a href="../crear.html">Crear usuario</a>
+      <a href="../gestionar_usuarios.html">Gestionar usuarios</a>
+      <a href="../../../programas/auth/logout.php" class="btn-login">Cerrar Sesión</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container admin-main">
+
+<h1>Reportes</h1>
+  <br>
+
+<form action="../../../programas/admin/reporte_avanzado.php" method="GET" target="reporteFrame" class="report-form">
+  <input type="hidden" name="tipo" value="consolidado">
+
+  <label>Fecha inicio</label>
+  <input type="date" name="inicio" class="login-input">
+
+  <label>Fecha fin</label>
+  <input type="date" name="fin" class="login-input">
+
+  <button type="submit" class="login-btn">Generar vista previa</button>
+</form>
+
+
+
+<section class="mt-20">
+  <h2>Vista previa del reporte</h2>
+  <iframe id="reporteFrame" name="reporteFrame" src="../../../programas/admin/reporte_avanzado.php?tipo=consolidado" class="admin-iframe" style="height:650px;" width="100%"></iframe>
+</section>
+
+<br>
+
+<a href="../admin_dashboard.html" class="buttonplace">Volver</a>
+
+</main>
+
+</body>
+</html>

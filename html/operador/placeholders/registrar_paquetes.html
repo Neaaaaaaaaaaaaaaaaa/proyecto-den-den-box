@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Registrar Paquetes — Den Den Box</title>
+  <link rel="shortcut icon" href="../../../img/warzone.svg" type="image/x-icon">
+  <link rel="stylesheet" href="../../../css/style.css">
+</head>
+<body>
+<!--  -->
+<!--  -->
+<!-- aqui va el php de grabar producto -->
+<!--  -->
+<header class="header">
+  <div class="container navbar">
+    <a class="brand" href="../index_operador.html">
+      <img src="../../../img/logo.png">
+      <div>
+        <div class="title">Den Den Box</div>
+        <div class="subtitle">Registrar Paquetes</div>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="../index_operador.html">Inicio</a>
+      <a href="../operator_dashboard.html">Dashboard operador</a>
+      <a href="../../../programas/auth/logout.php" class="btn-login">Cerrar Sesión</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container form-page">
+
+  <h1>Registrar Novedades</h1>
+  <p>Completa la información de la novedad.</p>
+
+  <div class="form-card">
+    <form action="../../../programas/operador/novedades.php" method="POST">
+      <label>Nombre del destinatario</label>
+      <input type="text" placeholder="Nombre completo" class="login-input">
+
+      <label>Tipo de Novedad</label>
+      <select class="login-input">
+        <option>Seguridad</option>
+        <option>Mantenimiento</option>
+        <option>Parqueaderos</option>
+        <option>Correspondencia y Paquetes</option>
+        <option>Convivencia</option>
+        <option>Administrativas</option>
+        <option>Emergencias</option>
+
+      </select>
+
+      <label>Observaciones</label>
+      <textarea name="observaciones" placeholder="Especificar la Novedad..." required class="login-input mb-14 textarea-standard"></textarea>
+
+      <button class="login-btn">
+        Registrar
+      </button>
+    </form>
+  </div>
+    <div>
+        <a href="../operator_dashboard.html" class="buttonplace">Volver</a>
+    </div>
+  <section class="footer">© 2025 Den Den Box — Proyecto SENA</section>
+</main>
+
+</body>
+</html>

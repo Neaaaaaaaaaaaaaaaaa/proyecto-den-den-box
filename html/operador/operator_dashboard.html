@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard — Operador</title>
+  <link rel="shortcut icon" href="../../img/warzone.svg" type="image/x-icon">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container navbar">
+      <a class="brand" href="index_operador.html"><img src="../../img/logo.png" alt="logo"><div><div class="title">Den Den Box</div><div class="subtitle">Operador</div></div></a>
+      <nav class="nav-links">
+        <a href="index_operador.html">Inicio</a>
+        <a href="operator_dashboard.html" class="is-active">Dashboard operador</a>
+        <a href="../../programas/auth/logout.php" class="btn-login">Cerrar Sesion</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container app">
+    <aside class="sidebar">
+      <h3>Panel del Operador</h3>
+      <nav class="nav">
+        <a href="placeholders/registrar_paquetes.html">Registrar Paquetes</a>
+
+      </nav>
+    </aside>
+
+<section class="dashboard-content">
+  <h1>Panel del Operador</h1>
+
+  <div class="kpi-row mt-12">
+
+    <div class="kpi">
+      <h2>Paquetes registrados</h2>
+      <table class="tabla-dashboard">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Residente</th>
+            <th>Fecha recepción</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PQ-1580</td>
+            <td>Apto 302</td>
+            <td>03/12/2025</td>
+            <td>Entregado</td>
+          </tr>
+          <tr>
+            <td>PQ-1588</td>
+            <td>Apto 105</td>
+            <td>04/12/2025</td>
+            <td>Pendiente por recoger</td>
+          </tr>
+          <tr>
+            <td>PQ-1591</td>
+            <td>Apto 407</td>
+            <td>04/12/2025</td>
+            <td>Pendiente</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="kpi">
+      <h2>Notificaciones enviadas</h2>
+      <table class="tabla-dashboard">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Residente</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>NT-4201</td>
+            <td>Paquete recibido</td>
+            <td>Apto 105</td>
+            <td>04/12/2025</td>
+          </tr>
+          <tr>
+            <td>NT-4204</td>
+            <td>Recordatorio</td>
+            <td>Apto 407</td>
+            <td>04/12/2025</td>
+          </tr>
+          <tr>
+            <td>NT-4210</td>
+            <td>Novedad registrada</td>
+            <td>Apto 302</td>
+            <td>02/12/2025</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="kpi">
+      <h2>Novedades reportadas</h2>
+      <table class="tabla-dashboard">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>NV-3102</td>
+            <td>Fuga de agua en baño del lobby</td>
+            <td>03/12/2025</td>
+            <td>En proceso</td>
+          </tr>
+          <tr>
+            <td>NV-3110</td>
+            <td>Ruido en parqueadero interno</td>
+            <td>04/12/2025</td>
+            <td>Pendiente</td>
+          </tr>
+          <tr>
+            <td>NV-3118</td>
+            <td>Ascensor torre A detenido</td>
+            <td>04/12/2025</td>
+            <td>Atendida</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+  </main>
+
+  <footer class="footer container">© 2025 Den Den Box — Proyecto SENA</footer>
+</body>
+</html>
