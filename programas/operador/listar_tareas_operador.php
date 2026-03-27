@@ -1,10 +1,11 @@
 <?php
 session_start();
-include 'conexion.php';
+include("../comun/conexion.php");
 
 // Verificar si el usuario está logueado y es operador (rol 2) o admin (rol 1)
-if (!isset($_SESSION['id_usuario']) || ($_SESSION['id_rol'] != 2 && $_SESSION['id_rol'] != 1)) {
-    header("Location: ../html/login.html");
+$rol = isset($_SESSION['id_rol']) ? intval($_SESSION['id_rol']) : intval($_SESSION['rol'] ?? 0);
+if (!isset($_SESSION['id_usuario']) || ($rol !== 2 && $rol !== 1)) {
+    header("Location: ../../html/comun/login.html");
     exit();
 }
 
@@ -15,7 +16,7 @@ $filtro_estado = isset($_GET['estado']) ? $_GET['estado'] : 'todos';
 $sql = "SELECT id, titulo, descripcion, estado, fecha_creacion, fecha_vencimiento, prioridad FROM tareas WHERE rol = 'Operador'";
 
 if ($filtro_estado !== 'todos') {
-    $sql .= " AND estado = '" . $conn->real_escape_string($filtro_estado) . "'";
+    $sql .= " AND estado = '" . $conexion->real_escape_string($filtro_estado) . "'";
 }
 
 $sql .= " ORDER BY 
@@ -27,12 +28,12 @@ $sql .= " ORDER BY
     END,
     fecha_vencimiento ASC";
 
-$result = $conn->query($sql);
+$result = $conexion->query($sql);
 
 // Contar tareas por estado
-$tareas_activas = $conn->query("SELECT COUNT(*) as count FROM tareas WHERE rol = 'Operador' AND estado = 'Activo'")->fetch_assoc()['count'];
-$tareas_pendientes = $conn->query("SELECT COUNT(*) as count FROM tareas WHERE rol = 'Operador' AND estado = 'Pendiente'")->fetch_assoc()['count'];
-$tareas_finalizadas = $conn->query("SELECT COUNT(*) as count FROM tareas WHERE rol = 'Operador' AND estado = 'Finalizado'")->fetch_assoc()['count'];
+$tareas_activas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHERE rol = 'Operador' AND estado = 'Activo'")->fetch_assoc()['count'];
+$tareas_pendientes = $conexion->query("SELECT COUNT(*) as count FROM tareas WHERE rol = 'Operador' AND estado = 'Pendiente'")->fetch_assoc()['count'];
+$tareas_finalizadas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHERE rol = 'Operador' AND estado = 'Finalizado'")->fetch_assoc()['count'];
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +42,7 @@ $tareas_finalizadas = $conn->query("SELECT COUNT(*) as count FROM tareas WHERE r
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Tareas - Operador</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <style>
         .filter-buttons {
             display: flex;
@@ -205,17 +206,17 @@ $tareas_finalizadas = $conn->query("SELECT COUNT(*) as count FROM tareas WHERE r
 <body>
 <header class="header">
     <div class="container navbar">
-        <a class="brand" href="../index_operador.html">
-            <img src="../img/logo.png">
+        <a class="brand" href="../../html/operador/index_operador.html">
+            <img src="../../img/logo.png">
             <div>
                 <div class="title">Den Den Box</div>
                 <div class="subtitle">Mis Tareas</div>
             </div>
         </a>
         <nav class="nav-links">
-            <a href="../index_operador.html">Inicio</a>
-            <a href="../operator_dashboard.html">Dashboard</a>
-            <a href="logout.php" class="btn-login">Cerrar Sesión</a>
+            <a href="../../html/operador/index_operador.html">Inicio</a>
+            <a href="../../html/operador/operator_dashboard.html">Dashboard</a>
+            <a href="../../programas/auth/logout.php" class="btn-login">Cerrar Sesión</a>
         </nav>
     </div>
 </header>
@@ -316,3 +317,5 @@ function cambiarEstado(idTarea, nuevoEstado) {
     });
 }
 </script>
+</body>
+</html>

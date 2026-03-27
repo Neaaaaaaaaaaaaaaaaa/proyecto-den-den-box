@@ -91,7 +91,7 @@ $resultado = mysqli_query($conexion, $sql);
 
 <div class="container">
 
-<h1>Comunicaciones</h1>
+
 
 <?php if (!$embed): ?>
 <div style="margin-bottom:16px;">

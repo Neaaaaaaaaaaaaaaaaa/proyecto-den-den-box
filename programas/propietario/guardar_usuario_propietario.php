@@ -392,12 +392,12 @@ mysqli_query($conexion,$sql_mascota);
 if($es_actualizacion){
     echo "<script>
     alert('Usuario actualizado correctamente');
-    window.location.href='../../html/propietario/propietario_crear.html';
+    window.location.href='../../html/propietario/propietario_crear.php';
     </script>";
 } else {
     echo "<script>
     alert('Usuario registrado correctamente');
-    window.location.href='../../html/propietario/propietario_crear.html';
+    window.location.href='../../html/propietario/propietario_crear.php';
     </script>";
 }
 

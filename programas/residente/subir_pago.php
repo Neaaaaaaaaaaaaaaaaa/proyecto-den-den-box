@@ -28,12 +28,19 @@ if(isset($_POST['nombre'], $_POST['descripcion'], $_POST['fecha_pago'], $_POST['
 			$estado_pago = 'Pagado';
 		}
 
-		$archivo = $_FILES['archivo']['name'];
-		$ruta = "../uploads/" . $archivo;
+		$archivo = basename($_FILES['archivo']['name']);
+		$directorio_uploads = __DIR__ . '/../../uploads/';
+		if (!is_dir($directorio_uploads)) {
+			mkdir($directorio_uploads, 0755, true);
+		}
+		$ruta = $directorio_uploads . $archivo;
 
-		move_uploaded_file($_FILES['archivo']['tmp_name'], $ruta);
+		if (!move_uploaded_file($_FILES['archivo']['tmp_name'], $ruta)) {
+			$respuesta = 'No se pudo guardar el archivo en el servidor.';
+		}
 
-		$sql = "INSERT INTO pagos(id_inmueble, nombre, descripcion, archivo, fecha_pago, valor, metodo_pago, estado_pago)
+		if (!isset($respuesta)) {
+			$sql = "INSERT INTO pagos(id_inmueble, nombre, descripcion, archivo, fecha_pago, valor, metodo_pago, estado_pago)
 						VALUES($id_inmueble_sql,'$nombre','$descripcion','$archivo','$fecha_pago','$valor','$metodo_pago','$estado_pago')";
 
 		if(mysqli_query($conexion, $sql)){
@@ -64,6 +71,7 @@ if(isset($_POST['nombre'], $_POST['descripcion'], $_POST['fecha_pago'], $_POST['
 				$respuesta = "ok";
 		} else {
 				$respuesta = "Error en la base de datos: " . mysqli_error($conexion);
+		}
 		}
 
 } else {

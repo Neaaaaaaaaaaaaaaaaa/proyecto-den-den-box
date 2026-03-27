@@ -3,7 +3,7 @@ include("../comun/conexion.php");
 
 $id_usuario = isset($_POST['id_usuario']) ? intval($_POST['id_usuario']) : 0;
 if($id_usuario <= 0){
-	echo "<script>alert('Usuario inválido');window.location.href='../../html/admin/crear.html';</script>";
+	echo "<script>alert('Usuario inválido');window.location.href='../../html/comun/index.html';</script>";
 	exit;
 }
 
@@ -44,12 +44,12 @@ try {
 	mysqli_query($conexion, "DELETE FROM PERSONAS WHERE id_persona=$id_persona");
 
 	mysqli_commit($conexion);
-	echo "<script>alert('Usuario eliminado correctamente');window.location.href='../../html/admin/crear.html';</script>";
+	echo "<script>alert('Usuario eliminado correctamente');window.location.href='../../html/admin/gestionar_usuarios.html';</script>";
 
 } catch (Exception $e) {
 	mysqli_rollback($conexion);
 	$msg = addslashes($e->getMessage());
-	echo "<script>alert('$msg');window.location.href='../../html/admin/crear.html';</script>";
+	echo "<script>alert('$msg');window.location.href='../../html/admin/gestionar_usuarios.html';</script>";
 }
 
 exit;
