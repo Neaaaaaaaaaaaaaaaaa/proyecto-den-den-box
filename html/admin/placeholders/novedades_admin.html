@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Novedades - Admin</title>
+<link rel="shortcut icon" href="../../../img/warzone.svg" type="image/x-icon">
+<link rel="stylesheet" href="../../../css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container navbar">
+    <a class="brand" href="../index_admin.html">
+      <img src="../../../img/logo.png" alt="Logo">
+      <div>
+        <div class="title">Den Den Box</div>
+        <div class="subtitle">Novedades reportadas</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="../index_admin.html">Inicio</a>
+      <a href="../admin_dashboard.html">Dashboard admin</a>
+      <a href="../crear.html">Crear usuario</a>
+      <a href="../gestionar_usuarios.html">Gestionar usuarios</a>
+      <a href="../../../programas/auth/logout.php" class="btn-login">Cerrar Sesion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container admin-main">
+  <h1>Novedades de operador y residente</h1>
+  <p>Consulta las novedades registradas y filtra por origen, fechas o texto.</p>
+
+  <form id="filtrosNovedades" class="admin-actions mt-14" method="GET" action="../../../programas/admin/listar_novedades_admin.php" target="novedadesFrame">
+    <div>
+      <label for="origen">Origen</label>
+      <select id="origen" name="origen" class="login-input input-min-180 mb-0">
+        <option value="">Todos</option>
+        <option value="2">Operador</option>
+        <option value="3">Residente</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="inicio">Desde</label>
+      <input id="inicio" type="date" name="inicio" class="login-input input-min-170 mb-0">
+    </div>
+
+    <div>
+      <label for="fin">Hasta</label>
+      <input id="fin" type="date" name="fin" class="login-input input-min-170 mb-0">
+    </div>
+
+    <div class="flex-grow input-min-240">
+      <label for="q">Buscar</label>
+      <input id="q" type="text" name="q" class="login-input mb-0" placeholder="Descripción, nombre, categoría o inmueble">
+    </div>
+
+    <button type="submit" class="login-btn mb-0">Aplicar filtros</button>
+    <a href="../../../programas/admin/listar_novedades_admin.php" target="novedadesFrame" class="buttonplace secondary">Limpiar</a>
+  </form>
+
+  <section style="margin-top:20px;">
+    <iframe id="novedadesFrame" name="novedadesFrame" src="../../../programas/admin/listar_novedades_admin.php" class="admin-iframe" style="height:72vh; min-height:560px;" width="100%"></iframe>
+  </section>
+
+  <br>
+  <a href="../admin_dashboard.html" class="buttonplace">Volver</a>
+</main>
+
+</body>
+</html>
