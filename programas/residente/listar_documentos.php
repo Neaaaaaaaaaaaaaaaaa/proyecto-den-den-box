@@ -65,6 +65,7 @@ $resultado = mysqli_query($conexion,$sql);
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="refresh" content="30">
 <title>Documentos Publicados</title>
 <link rel="stylesheet" href="../../css/style.css">
 </head>

@@ -84,17 +84,138 @@ $resultado = mysqli_query($conexion, $sql);
 <head>
 <meta charset="utf-8">
 <title>Comunicaciones</title>
+<link rel="shortcut icon" href="../../../img/warzone.svg" type="image/x-icon">
 <link rel="stylesheet" href="../../css/style.css">
+<style>
+    .comunicaciones-page {
+        max-width: 980px;
+        margin: 32px auto 40px;
+        padding: 0 16px;
+    }
+
+    .comunicaciones-panel {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #d6e4ff;
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        padding: 24px;
+    }
+
+    .comunicaciones-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+
+    .comunicaciones-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #1f2937;
+    }
+
+    .comunicaciones-header p {
+        margin: 6px 0 0;
+        color: #475569;
+        font-size: 0.95rem;
+    }
+
+    .comunicaciones-actions {
+        margin-bottom: 16px;
+    }
+
+    .comunicaciones-page .cards {
+        margin-top: 0;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        align-items: stretch;
+    }
+
+    .comunicaciones-page .card {
+        text-align: left;
+        color: #1f2937;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 22px rgba(30, 64, 175, 0.08);
+    }
+
+    .comunicaciones-page .card p {
+        margin-top: 10px;
+        margin-bottom: 0;
+        line-height: 1.55;
+        font-weight: 500;
+        color: #334155;
+    }
+
+    .comunicaciones-page .card-meta {
+        margin: 8px 0;
+        color: #334155;
+        font-size: 0.92rem;
+        line-height: 1.55;
+    }
+
+    .comunicaciones-empty {
+        text-align: center;
+        padding: 26px;
+        border: 1px dashed #bfdbfe;
+        background: #eff6ff;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+
+    .comunicaciones-back {
+        margin-top: 18px;
+        text-align: center;
+    }
+
+    @media (max-width: 640px) {
+        .comunicaciones-panel {
+            padding: 18px;
+        }
+
+        .comunicaciones-header h1 {
+            font-size: 1.2rem;
+        }
+
+        .comunicaciones-page .cards {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 </head>
 
 <body>
+<header class="header">
+  <div class="container navbar">
+    <a class="brand" href="../../html/residente/index_residente.html">
+      <img src="../../img/logo.png">
+      <div>
+        <div class="title">Den Den Box</div>
+        <div class="subtitle">Comunicaciones</div>
+      </div>
+    </a>
+    <nav class="nav-links">
+        <a href="../index_residente.html">Inicio</a>
+        
+      <a href="../../../programas/auth/logout.php" class="btn-login">Cerrar Sesión</a>
+    </nav>
+  </div>
+</header>
 
-<div class="container">
+<main class="container comunicaciones-page">
+<section class="comunicaciones-panel">
+
+<div class="comunicaciones-header">
+    <div>
+        <h1>Comunicaciones del Conjunto</h1>
+        <p>Consulta avisos globales y mensajes asociados a tus inmuebles.</p>
+    </div>
+</div>
 
 
 
 <?php if (!$embed): ?>
-<div style="margin-bottom:16px;">
+<div class="comunicaciones-actions">
     <?php if ($historial): ?>
         <a href="listar_comunicaciones_residente.php" class="buttonplace">Ver sólo vigentes</a>
     <?php else: ?>
@@ -106,7 +227,7 @@ $resultado = mysqli_query($conexion, $sql);
 <div class="cards">
 
 <?php if (mysqli_num_rows($resultado) === 0): ?>
-    <div class="card">No hay comunicaciones disponibles.</div>
+    <div class="card comunicaciones-empty">No hay comunicaciones disponibles.</div>
 <?php else: ?>
     <?php while ($row = mysqli_fetch_assoc($resultado)): ?>
         <div class="card">
@@ -117,8 +238,10 @@ $resultado = mysqli_query($conexion, $sql);
             <?php else: ?>
                 <strong><?php echo htmlspecialchars($row['titulo']); ?></strong><br>
             <?php endif; ?>
-            Publicado: <?php echo $row['fecha']; ?><br>
-            Tipo: <?php echo htmlspecialchars($row['tipo']); ?><br>
+                        <div class="card-meta">
+                            Publicado: <?php echo $row['fecha']; ?><br>
+                            Tipo: <?php echo htmlspecialchars($row['tipo']); ?><br>
+                        </div>
             <?php if (is_null($row['id_inmueble'])): ?>
                 <span style="background-color:#4CAF50;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">Comunicación Global</span>
             <?php else: ?>
@@ -144,12 +267,15 @@ $resultado = mysqli_query($conexion, $sql);
 
 </div>
 
+</section>
+
 <?php if (!$embed): ?>
-<br>
-<a href="../../html/residente/placeholders/ver_comunicaciones.html" class="buttonplace">Volver</a>
+<div class="comunicaciones-back">
+    <a href="../../html/residente/placeholders/ver_comunicaciones.html" class="buttonplace">Volver</a>
+</div>
 <?php endif; ?>
 
-</div>
-
+</main>
+<footer class="footer mt-60">© 2025 Den Den Box — Proyecto SENA</footer>
 </body>
 </html>
