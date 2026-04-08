@@ -23,9 +23,6 @@ CREATE TABLE PERSONAS (
     telefono VARCHAR(20),
     correo VARCHAR(100)
 );
-
-    ALTER TABLE PERSONAS ADD edad INT;
-
 -- =========================
 -- TABLA USUARIOS
 -- =========================
