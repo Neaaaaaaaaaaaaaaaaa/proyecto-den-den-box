@@ -91,7 +91,47 @@ if ($inm_filter !== '') {
          LIMIT 5"
     );
     while ($q_pagos && $f = mysqli_fetch_assoc($q_pagos)) {
+        $f['origen'] = 'Pago pendiente';
         $tabla_pagos[] = $f;
+    }
+
+    $q_ajustes = mysqli_query(
+        $conexion,
+        "SELECT a.id_ajuste,
+                a.fecha_ajuste,
+                (a.nuevo_saldo - a.saldo_anterior) AS valor,
+                a.motivo,
+                i.numero AS apartamento,
+                t.nombre AS torre
+         FROM AJUSTES_SALDO_PENDIENTE a
+         INNER JOIN INMUEBLES i ON i.id_inmueble = a.id_inmueble
+         LEFT JOIN TORRES t ON t.id_torre = i.id_torre
+         WHERE a.id_inmueble IN ($inm_filter)
+           AND (a.nuevo_saldo - a.saldo_anterior) > 0
+         ORDER BY a.fecha_ajuste DESC, a.id_ajuste DESC
+         LIMIT 5"
+    );
+
+    while ($q_ajustes && $f = mysqli_fetch_assoc($q_ajustes)) {
+        $tabla_pagos[] = [
+            'id_pago' => 'A-' . intval($f['id_ajuste']),
+            'descripcion' => $f['motivo'] ?: 'Ajuste de deuda',
+            'fecha_pago' => $f['fecha_ajuste'],
+            'valor' => $f['valor'],
+            'apartamento' => $f['apartamento'],
+            'torre' => $f['torre'],
+            'origen' => 'Ajuste operador/admin'
+        ];
+    }
+
+    usort($tabla_pagos, function ($a, $b) {
+        $ta = strtotime((string) ($a['fecha_pago'] ?? ''));
+        $tb = strtotime((string) ($b['fecha_pago'] ?? ''));
+        return $tb <=> $ta;
+    });
+
+    if (count($tabla_pagos) > 5) {
+        $tabla_pagos = array_slice($tabla_pagos, 0, 5);
     }
 
     $doc_where = "WHERE (d.visibilidad = 'global' OR (d.visibilidad = 'inmueble' AND d.id_inmueble IN ($inm_filter)))";
@@ -403,18 +443,20 @@ $ahora = date('d/m/Y H:i:s');
               <thead>
                 <tr>
                   <th>Inmueble</th>
+                  <th>Origen</th>
                   <th>Fecha</th>
                   <th>Valor</th>
                 </tr>
               </thead>
               <tbody>
                 <?php if (count($tabla_pagos) === 0): ?>
-                  <tr><td class="empty-row" colspan="3">No hay pagos pendientes.</td></tr>
+                  <tr><td class="empty-row" colspan="4">No hay pagos pendientes.</td></tr>
                 <?php else: ?>
                   <?php foreach ($tabla_pagos as $fila): ?>
                     <tr>
                       <td><?php echo htmlspecialchars(($fila['torre'] ?? '-') . ' ' . ($fila['apartamento'] ?? '-')); ?></td>
-                      <td><?php echo htmlspecialchars($fila['fecha_pago']); ?></td>
+                      <td><?php echo htmlspecialchars($fila['origen'] ?? 'Pago pendiente'); ?></td>
+                      <td><?php echo htmlspecialchars(substr((string) ($fila['fecha_pago'] ?? ''), 0, 19)); ?></td>
                       <td>$ <?php echo number_format(floatval($fila['valor']), 0, ',', '.'); ?></td>
                     </tr>
                   <?php endforeach; ?>

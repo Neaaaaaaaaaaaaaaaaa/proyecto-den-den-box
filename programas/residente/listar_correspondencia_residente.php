@@ -9,6 +9,7 @@ if ($rol !== 3) {
 }
 
 $id_persona = intval($_SESSION['id_persona'] ?? 0);
+$id_residente = intval($_SESSION['id_residente'] ?? 0);
 $nombre_residente = "";
 
 if ($id_persona > 0) {
@@ -18,6 +19,17 @@ if ($id_persona > 0) {
     }
 }
 
+if ($id_residente <= 0 && $id_persona > 0) {
+  $q_res = mysqli_query($conexion, "SELECT id_residente FROM RESIDENTES WHERE id_persona = $id_persona LIMIT 1");
+  if ($q_res && mysqli_num_rows($q_res) > 0) {
+    $id_residente = intval(mysqli_fetch_assoc($q_res)['id_residente']);
+    $_SESSION['id_residente'] = $id_residente;
+  }
+}
+
+$check_col_res = mysqli_query($conexion, "SHOW COLUMNS FROM paquetes LIKE 'id_residente'");
+$tiene_col_residente = ($check_col_res && mysqli_num_rows($check_col_res) > 0);
+
 $tiene_tabla = false;
 $check_tabla = mysqli_query($conexion, "SHOW TABLES LIKE 'paquetes'");
 if ($check_tabla && mysqli_num_rows($check_tabla) > 0) {
@@ -26,14 +38,25 @@ if ($check_tabla && mysqli_num_rows($check_tabla) > 0) {
 
 $paquetes = [];
 if ($tiene_tabla && $nombre_residente !== "") {
-    $sql = "SELECT id, residente, empresa, observaciones, estado, fecha_registro
-            FROM paquetes
-            WHERE LOWER(residente) = LOWER(?)
-               OR LOWER(residente) LIKE LOWER(CONCAT('%', ?, '%'))
-            ORDER BY fecha_registro DESC, id DESC";
+  $sql = "SELECT id, residente, empresa, observaciones, estado, fecha_registro
+      FROM paquetes
+      WHERE ";
+
+  if ($tiene_col_residente && $id_residente > 0) {
+    $sql .= "id_residente = ? OR ";
+  }
+
+  $sql .= "LOWER(residente) = LOWER(?)
+         OR LOWER(residente) LIKE LOWER(CONCAT('%', ?, '%'))
+      ORDER BY fecha_registro DESC, id DESC";
+
     $stmt = $conexion->prepare($sql);
     if ($stmt) {
-        $stmt->bind_param("ss", $nombre_residente, $nombre_residente);
+    if ($tiene_col_residente && $id_residente > 0) {
+      $stmt->bind_param("iss", $id_residente, $nombre_residente, $nombre_residente);
+    } else {
+      $stmt->bind_param("ss", $nombre_residente, $nombre_residente);
+    }
         $stmt->execute();
         $resultado = $stmt->get_result();
         while ($resultado && $fila = $resultado->fetch_assoc()) {

@@ -102,6 +102,7 @@ $ahora = date('d/m/Y H:i:s');
       <div>
         <h1>Mis Novedades</h1>
         <p>Consulta las novedades relacionadas con tu inmueble, incluyendo actualizaciones de PQRS, pagos y comunicaciones importantes.</p>
+      </div>
     </div>
 
     <iframe src="listar_mis_novedades_residente.php" class="news-frame" title="Novedades del residente"></iframe>
