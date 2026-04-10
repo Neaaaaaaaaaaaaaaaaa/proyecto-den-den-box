@@ -2,7 +2,7 @@
 session_start();
 include("../comun/conexion.php");
 
-if(!isset($_SESSION['rol']) || intval($_SESSION['rol']) !== 1){
+if(!isset($_SESSION['rol']) || (intval($_SESSION['rol']) !== 1 && intval($_SESSION['rol']) !== 2)){
 	header("Location: pagos_realtime.php?status=unauthorized");
 	exit;
 }
@@ -48,16 +48,29 @@ $saldo_actual = isset($fila['saldo_actual']) ? floatval($fila['saldo_actual']) :
 $nuevo_saldo = $saldo_actual + $monto_agregar;
 
 $id_usuario_admin = isset($_SESSION['id_usuario']) ? intval($_SESSION['id_usuario']) : 'NULL';
-$motivo = "Suma manual al saldo pendiente";
+$rol_actual = intval($_SESSION['rol']);
+$motivo = ($rol_actual === 2)
+	? "Suma manual al saldo pendiente por operador"
+	: "Suma manual al saldo pendiente por administrador";
 $motivo_sql = mysqli_real_escape_string($conexion, $motivo);
 
-$sql_insert = "INSERT INTO AJUSTES_SALDO_PENDIENTE (id_inmueble, saldo_anterior, nuevo_saldo, motivo, id_usuario_admin)
+mysqli_begin_transaction($conexion);
+
+$sql_insert_ajuste = "INSERT INTO AJUSTES_SALDO_PENDIENTE (id_inmueble, saldo_anterior, nuevo_saldo, motivo, id_usuario_admin)
 			   VALUES ($id_inmueble, $saldo_actual, $nuevo_saldo, '$motivo_sql', $id_usuario_admin)";
 
-if(mysqli_query($conexion, $sql_insert)){
+$descripcion_pago = mysqli_real_escape_string($conexion, $motivo . " (registro automatico)");
+$nombre_pago = mysqli_real_escape_string($conexion, "Cargo de deuda");
+$sql_insert_pago = "INSERT INTO PAGOS (id_inmueble, fecha_pago, valor, estado_pago, metodo_pago, nombre, descripcion)
+			   VALUES ($id_inmueble, CURDATE(), $monto_agregar, 'Pendiente', 'Ajuste', '$nombre_pago', '$descripcion_pago')";
+
+if(mysqli_query($conexion, $sql_insert_ajuste) && mysqli_query($conexion, $sql_insert_pago)){
+	mysqli_commit($conexion);
 	header("Location: pagos_realtime.php?status=updated&id_inmueble=$id_inmueble");
 	exit;
 }
+
+mysqli_rollback($conexion);
 
 header("Location: pagos_realtime.php?status=error");
 exit;

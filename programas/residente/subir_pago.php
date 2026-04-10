@@ -99,7 +99,7 @@ if(isset($_POST['nombre'], $_POST['descripcion'], $_POST['fecha_pago'], $_POST['
 		</a>
 		<nav class="nav-links">
 			<a href="../../html/residente/index_residente.html">Inicio</a>
-			<a href="../../html/residente/user_dashboard.html">Dashboard residente</a>
+			<a href="dashboard_residente.php">Dashboard residente</a>
 			<a href="../../programas/auth/logout.php" class="btn-login">Cerrar Sesión</a>
 		</nav>
 	</div>
@@ -110,7 +110,7 @@ if(isset($_POST['nombre'], $_POST['descripcion'], $_POST['fecha_pago'], $_POST['
 		<?php if($respuesta === "ok"): ?>
 			<h2 style="color:green;margin-bottom:20px;">✓ Pago subido correctamente</h2>
 			<p style="margin-bottom:20px;color:#666;">Tu pago ha sido registrado en el sistema.</p>
-			<a href="../../html/residente/user_dashboard.html" style="display:inline-block;background:var(--primary);color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">Volver al Dashboard</a>
+			<a href="dashboard_residente.php" style="display:inline-block;background:var(--primary);color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">Volver al Dashboard</a>
 		<?php else: ?>
 			<h2 style="color:red;margin-bottom:20px;">✗ Error al registrar el pago</h2>
 			<p style="margin-bottom:20px;color:#666;"><?php echo $respuesta; ?></p>
