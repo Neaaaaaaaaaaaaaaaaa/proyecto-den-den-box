@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Documentos — Propietario</title>
+<link rel="shortcut icon" href="../../../img/warzone.svg" type="image/x-icon">
+<link rel="stylesheet" href="../../../css/style.css">
+</head>
+<body>
+
+<header class="header">
+	<div class="container navbar">
+		<a class="brand" href="../index_propietario.html">
+			<img src="../../../img/logo.png" alt="Den Den Box logo">
+			<div>
+				<div class="title">Den Den Box</div>
+				<div class="subtitle">Propietario</div>
+			</div>
+		</a>
+
+		<nav class="nav-links">
+			<a href="../index_propietario.html">Inicio</a>
+			<a href="ver_comunicaciones_propietario.html">Comunicaciones</a>
+			<a href="documentos_propietario.html" class="is-active">Documentos</a>
+			<a href="../propietario_crear.php">Crear usuario</a>
+			<a href="../../../programas/auth/logout.php" class="btn-login">Cerrar Sesion</a>
+		</nav>
+	</div>
+</header>
+
+<main class="container admin-main">
+	<h1>Documentos disponibles</h1>
+	<p>Aquí puedes consultar los documentos asociados a los inmuebles vinculados a tu perfil de propietario.</p>
+
+	<section class="admin-panel mt-14">
+		<h2 class="section-title">Documentos de mis inmuebles</h2>
+		<p class="form-note mb-12">Solo se muestran documentos autorizados para tus apartamentos.</p>
+
+		<iframe
+			src="../../../programas/propietario/listar_documentos.php"
+			class="admin-iframe iframe-h-520"
+			width="100%"></iframe>
+	</section>
+
+	<div class="mt-14">
+		<a href="../index_propietario.html" class="buttonplace">Volver</a>
+	</div>
+</main>
+
+<section class="footer">© 2025 Den Den Box — Proyecto SENA</section>
+
+</body>
+</html>

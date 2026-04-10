@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Comunicaciones y Novedades — Propietario</title>
+<link rel="shortcut icon" href="../../../img/warzone.svg" type="image/x-icon">
+<link rel="stylesheet" href="../../../css/style.css">
+</head>
+<body>
+
+<header class="header">
+	<div class="container navbar">
+		<a class="brand" href="../index_propietario.html">
+			<img src="../../../img/logo.png" alt="Den Den Box logo">
+			<div>
+				<div class="title">Den Den Box</div>
+				<div class="subtitle">Propietario</div>
+			</div>
+		</a>
+
+		<nav class="nav-links">
+			<a href="../index_propietario.html">Inicio</a>
+			<a href="ver_comunicaciones_propietario.html" class="is-active">Comunicaciones</a>
+			<a href="documentos_propietario.html">Documentos</a>
+			<a href="../propietario_crear.php">Crear usuario</a>
+			<a href="../../../programas/auth/logout.php" class="btn-login">Cerrar Sesion</a>
+		</nav>
+	</div>
+</header>
+
+<main class="container admin-main">
+	<h1>Comunicaciones y Novedades</h1>
+	<p>Aquí puedes consultar todas las comunicaciones y novedades relacionadas con tus inmuebles.</p>
+
+	<section class="admin-panel mt-14">
+
+
+		<iframe
+			id="frameComunicaciones"
+			name="frameComunicaciones"
+			src="../../../programas/residente/listar_comunicaciones_residente.php?historial=1&embed=1"
+			class="admin-iframe iframe-h-420"
+			width="100%"></iframe>
+	</section>
+
+	<section class="admin-panel mt-18">
+		<h2 class="section-title">Novedades de tus inmuebles</h2>
+		<p class="form-note mb-12">Se muestran todas las novedades reportadas en los inmuebles vinculados a tu perfil.</p>
+
+		<iframe
+			src="../../../programas/propietario/listar_novedades_propietario.php"
+			class="admin-iframe iframe-h-460"
+			width="100%"></iframe>
+	</section>
+
+	<div class="mt-14">
+		<a href="../index_propietario.html" class="buttonplace">Volver</a>
+	</div>
+</main>
+
+<section class="footer">© 2025 Den Den Box — Proyecto SENA</section>
+
+</body>
+</html>

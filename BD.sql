@@ -23,6 +23,7 @@ CREATE TABLE PERSONAS (
     telefono VARCHAR(20),
     correo VARCHAR(100)
 );
+
 -- =========================
 -- TABLA USUARIOS
 -- =========================
@@ -43,12 +44,11 @@ CREATE TABLE USUARIOS (
 CREATE TABLE RESIDENTES (
     id_residente INT AUTO_INCREMENT PRIMARY KEY,
     id_persona INT,
-    profesion VARCHAR(100),
+    profesion VARCHAR(100) NULL,
 
     FOREIGN KEY (id_persona) REFERENCES PERSONAS(id_persona)
 );
 
-    ALTER TABLE RESIDENTES MODIFY profesion VARCHAR(100) NULL;
 
 -- =========================
 -- TABLA PROPIETARIOS
@@ -298,6 +298,20 @@ CREATE TABLE NOTIFICACIONES (
 );
 
 -- =========================
+-- TABLA PQRS
+-- =========================
+CREATE TABLE PQRS (
+    id_pqrs INT AUTO_INCREMENT PRIMARY KEY,
+    id_residente INT NOT NULL,
+    tipo VARCHAR(30) NOT NULL,
+    asunto VARCHAR(150) NOT NULL,
+    descripcion TEXT NOT NULL,
+    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    estado VARCHAR(30) NOT NULL DEFAULT 'Pendiente',
+    FOREIGN KEY (id_residente) REFERENCES RESIDENTES(id_residente)
+);
+
+-- =========================
 -- TABLA CONTACTOS
 -- =========================
 CREATE TABLE CONTACTOS (
@@ -348,10 +362,11 @@ INSERT INTO ROLES (id_rol, nombre_rol) VALUES
 -- TORRES
 -- =========================
 INSERT INTO TORRES (nombre) VALUES
-('Alpha'),
-('Bravo'),
-('Charlie'),
-('Delta');
+('Konoha'),
+('Hoenn'),
+('Midgar'),
+('Raccoon'),
+('Hyrule');
 
 -- =========================
 -- PRIORIDADES
@@ -654,4 +669,259 @@ INSERT INTO tareas (titulo, descripcion, rol, estado, prioridad, fecha_vencimien
 ('Entrega de correspondencia', 'Distribuir la correspondencia en los buzones correspondientes', 'Operador', 'Finalizado', 'Baja', '2026-03-25'),
 ('Reporte de incidentes', 'Documentar los incidentes del día y enviar al administrador', 'Operador', 'Activo', 'Alta', '2026-03-27'),
 ('Verificar illuminación común', 'Revisar que las luces de áreas comunes estén funcionando', 'Operador', 'Finalizado', 'Baja', '2026-03-25');
+
+-- =========================
+-- INSERTS EXTRA 
+-- =========================
+
+INSERT INTO PERSONAS (nombre_completo,tipo_documento,numero_documento,edad,telefono,correo) VALUES
+('Naruto Uzumaki','CC','2001','21','3100002001','naruto@konoha.com'),
+('Sasuke Uchiha','CC','2002','22','3100002002','sasuke@konoha.com'),
+('Goku Son','CC','2003','35','3100002003','goku@capsule.com'),
+('Kratos Sparta','CC','2004','40','3100002004','kratos@olympus.com'),
+('Link Hyrule','CC','2005','28','3100002005','link@hyrule.com'),
+('Bruce Wayne','CC','2006','38','3100002006','bruce@wayneenterprises.com'),
+('Patrick Bateman','CC','2007','33','3100002007','patrick@pierceandpierce.com'),
+('Bilbo Bolson','CC','2008','50','3100002008','bilbo@shire.com'),
+('John Kramer','CC','2009','52','3100002009','john@jigsaw.com');
+
+INSERT INTO USUARIOS (id_persona,contraseña,id_rol,estado) VALUES
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2001' LIMIT 1),'konoha123',3,'Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2002' LIMIT 1),'uchiha123',4,'Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2003' LIMIT 1),'saiyan123',3,'Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2004' LIMIT 1),'ares123',4,'Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2005' LIMIT 1),'triforce123',3,'Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2006' LIMIT 1),'bat123',4,'Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2007' LIMIT 1),'wallstreet123',3,'Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2008' LIMIT 1),'shire123',4,'Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2009' LIMIT 1),'jigsaw123',3,'Activo');
+
+INSERT INTO RESIDENTES (id_persona,profesion) VALUES
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2001' LIMIT 1),'Ninja'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2002' LIMIT 1),'Espadachin'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2003' LIMIT 1),'Guerrero Z'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2004' LIMIT 1),'Guerrero'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2005' LIMIT 1),'Heroe'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2006' LIMIT 1),'Empresario'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2007' LIMIT 1),'Ejecutivo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2008' LIMIT 1),'Aventurero'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2009' LIMIT 1),'Ingeniero');
+
+INSERT INTO PROPIETARIOS (id_persona,direccion_residencia) VALUES
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2001' LIMIT 1),'Aldea Oculta de la Hoja'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2002' LIMIT 1),'Distrito Uchiha'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2003' LIMIT 1),'Montana Paoz'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2004' LIMIT 1),'Templo de Sparta'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2005' LIMIT 1),'Castillo de Hyrule'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2006' LIMIT 1),'Mansion Wayne'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2007' LIMIT 1),'Upper East Side'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2008' LIMIT 1),'La Comarca'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2009' LIMIT 1),'Taller Kramer');
+
+INSERT INTO EMPLEADOS (id_persona,cargo,especialidad,turno,estado_laboral) VALUES
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2001' LIMIT 1),'Vigilancia','Seguridad ninja','Noche','Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2002' LIMIT 1),'Mantenimiento','Electricidad','Dia','Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2003' LIMIT 1),'Conserje','Atencion residentes','Dia','Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2004' LIMIT 1),'Operador','Control accesos','Noche','Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2005' LIMIT 1),'Auxiliar','Documentacion','Dia','Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2006' LIMIT 1),'Administrador','Gestion estrategica','Dia','Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2007' LIMIT 1),'Operador','Control financiero','Dia','Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2008' LIMIT 1),'Conserje','Atencion comunitaria','Dia','Activo'),
+((SELECT id_persona FROM PERSONAS WHERE numero_documento='2009' LIMIT 1),'Mantenimiento','Mecanica de precision','Noche','Activo');
+
+
+
+INSERT INTO INMUEBLES (numero,id_torre,area,parqueadero,id_propietario,total_personas,total_adultos,total_menores) VALUES
+('501',1,82,'P41',1,3,2,1),
+('502',2,79,'P42',2,4,3,1),
+('503',3,88,'P43',3,2,2,0),
+('504',4,91,'P44',4,5,3,2),
+('505',1,85,'P45',5,3,2,1);
+
+INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES
+(1,21,'2025-06-01'),
+(2,22,'2025-06-02'),
+(3,23,'2025-06-03'),
+(4,24,'2025-06-04'),
+(5,25,'2025-06-05');
+
+INSERT INTO MASCOTAS (id_residente,tipo,raza,cantidad) VALUES
+(6,'Perro','Akamaru',1),
+(7,'Gato','Neko',1),
+(8,'Ave','Chocobo',1),
+(9,'Perro','Cerberus',1),
+(10,'Dragon','Mini Dragon',1);
+
+INSERT INTO CONTACTOS_DE_EMERGENCIA (id_residente,nombre,telefono,relacion) VALUES
+(5,'Kakashi Hatake','3110002001','Tutor'),
+(6,'Vegeta Prince','3110002002','Amigo'),
+(7,'Tifa Lockhart','3110002003','Amiga'),
+(8,'Geralt Rivia','3110002004','Aliado'),
+(9,'Zelda Hyrule','3110002005','Hermana');
+
+INSERT INTO CATEGORIAS_NOVEDAD (nombre_categoria) VALUES
+('Jutsu electrico'),
+('Capsula averiada'),
+('Materia perdida'),
+('Bug de sistema'),
+('Portal inestable');
+
+INSERT INTO ESTADOS_DE_NOVEDAD (nombre_estado) VALUES
+('Reportada'),
+('Asignada'),
+('En revision'),
+('Resuelta parcial'),
+('Cerrada QA');
+
+INSERT INTO PRIORIDADES (nombre) VALUES
+('Mision S'),
+('Legendaria'),
+('Epic'),
+('Rare'),
+('Common');
+
+INSERT INTO NOVEDAD (id_inmueble,id_usuario,id_categoria,id_estado,id_prioridad,descripcion,fecha_reporte,fecha_cierre) VALUES
+(21,5,1,1,4,'Falla de energia en sala comun estilo cyberpunk','2026-01-10',NULL),
+(22,6,2,2,3,'Ruido en zona social por torneo de fighting','2026-01-11',NULL),
+(23,7,3,3,2,'Filtro de agua dañado en torre Midgar','2026-01-12','2026-01-15'),
+(24,8,4,1,1,'Puerta principal no valida tarjetas','2026-01-13',NULL),
+(25,9,5,2,4,'Iluminacion intermitente en pasillo','2026-01-14',NULL);
+
+INSERT INTO EVIDENCIAS_DE_NOVEDAD (id_novedad,tipo_archivo,url_archivo,fecha_subida,subido_por) VALUES
+(1,'imagen','uploads/evidencias/naruto_01.jpg','2026-01-10','Naruto Uzumaki'),
+(2,'video','uploads/evidencias/goku_02.mp4','2026-01-11','Goku Son'),
+(3,'pdf','uploads/evidencias/kratos_03.pdf','2026-01-12','Kratos Sparta'),
+(1,'imagen','uploads/evidencias/link_04.jpg','2026-01-13','Link Hyrule'),
+(2,'audio','uploads/evidencias/sasuke_05.mp3','2026-01-14','Sasuke Uchiha');
+
+INSERT INTO tareas (titulo, descripcion, rol, estado, prioridad, fecha_vencimiento) VALUES
+('Patrullar torre Konoha','Revisar accesos y camaras en niveles 1-5','Operador','Activo','Alta','2026-04-01'),
+('Registrar pagos Midgar','Validar soportes de pago de torre Midgar','Operador','Pendiente','Media','2026-04-02'),
+('Auditar documentos Hyrule','Verificar vigencia de documentos cargados','Operador','Activo','Urgente','2026-04-03'),
+('Inspeccion ascensor Rapture','Revisar estado mecanico y reporte tecnico','Operador','Pendiente','Alta','2026-04-04'),
+('Cerrar casos backlog','Finalizar tareas antiguas pendientes','Operador','Finalizado','Baja','2026-03-30');
+
+INSERT INTO PAGOS (id_inmueble,fecha_pago,valor,estado_pago,metodo_pago,nombre,descripcion,archivo) VALUES
+(21,'2026-01-05',320000,'Pagado','Transferencia','Naruto Uzumaki','Cuota administracion enero','uploads/pagos/pago_naruto.pdf'),
+(22,'2026-01-06',300000,'Pendiente','Efectivo','Sasuke Uchiha','Cuota administracion enero','uploads/pagos/pago_sasuke.pdf'),
+(23,'2026-01-07',280000,'Pagado','Tarjeta','Goku Son','Cuota administracion enero','uploads/pagos/pago_goku.pdf'),
+(24,'2026-01-08',350000,'Pendiente','Transferencia','Kratos Sparta','Cuota administracion enero','uploads/pagos/pago_kratos.pdf'),
+(25,'2026-01-09',295000,'Pagado','PSE','Link Hyrule','Cuota administracion enero','uploads/pagos/pago_link.pdf');
+
+INSERT INTO AJUSTES_SALDO_PENDIENTE (id_inmueble,saldo_anterior,nuevo_saldo,motivo,id_usuario_admin) VALUES
+(21,320000,280000,'Descuento evento Konoha',1),
+(22,300000,300000,'Sin cambios por validacion',1),
+(23,280000,250000,'Ajuste por pronto pago',1),
+(24,350000,360000,'Recargo mora',1),
+(25,295000,270000,'Bonificacion comunitaria',1);
+
+INSERT INTO DOCUMENTOS (id_inmueble,tipo_documento,url_documento,fecha_subida,visibilidad) VALUES
+(21,'Manual convivencia','uploads/documentos/manual_konoha.pdf','2026-01-01','inmueble'),
+(22,'Reglamento pagos','uploads/documentos/pagos_namek.pdf','2026-01-02','inmueble'),
+(23,'Acta reunion','uploads/documentos/acta_midgar.pdf','2026-01-03','global'),
+(24,'Circular seguridad','uploads/documentos/seguridad_rapture.pdf','2026-01-04','global'),
+(25,'Guia residentes','uploads/documentos/guia_hyrule.pdf','2026-01-05','inmueble');
+
+INSERT INTO HISTORIAL_DE_NOVEDAD (id_novedad,estado_anterior,estado_nuevo,id_usuario,fecha_cambio,observacion) VALUES
+(1,'Abierta','En proceso',2,'2026-01-10','Asignada a operador ninja'),
+(2,'En proceso','Resuelta',3,'2026-01-11','Se redujo nivel de ruido'),
+(3,'Abierta','Cerrada',4,'2026-01-12','Caso resuelto con mantenimiento'),
+(1,'En proceso','Resuelta',2,'2026-01-13','Validado por administrador'),
+(2,'Resuelta','Cerrada',1,'2026-01-14','Cierre definitivo');
+
+INSERT INTO NOTIFICACIONES (id_usuario,mensaje,tipo,leida,fecha_envio) VALUES
+(5,'Nueva tarea asignada en torre Konoha','Sistema','No','2026-01-10'),
+(6,'Pago pendiente detectado en inmueble 22','Finanzas','No','2026-01-11'),
+(7,'Novedad actualizada a En proceso','Novedades','Si','2026-01-12'),
+(8,'Documento nuevo disponible','Documentos','No','2026-01-13'),
+(9,'Recordatorio de cuota de administracion','Finanzas','No','2026-01-14');
+
+INSERT INTO CONTACTOS (nombre,correo,mensaje) VALUES
+('Ichigo Kurosaki','ichigo@bleach.com','Solicitud de informacion sobre reglamento interno'),
+('Aloy Nora','aloy@horizon.com','Consulta por estado de comunicados'),
+('Jin Kazama','jin@tekken.com','Reporte de ruido en zona comun'),
+('Makoto Yuki','makoto@persona.com','Peticion de soporte para acceso'),
+('Samus Aran','samus@metroid.com','Consulta sobre pagos pendientes');
+
+INSERT INTO COMUNICACIONES (titulo,tipo,estado,contenido,fecha,id_inmueble) VALUES
+('Evento Konoha Matsuri','Comunidad','Activo','Invitacion a actividad cultural anime','2026-01-15 08:00:00',21),
+('Torneo Smash vecinos','Recreacion','Activo','Inscripciones abiertas para torneo','2026-01-16 09:00:00',22),
+('Mantenimiento Midgar','Informativo','Cerrado','Se realizo mantenimiento general','2026-01-17 10:00:00',23),
+('Campana seguridad Rapture','Seguridad','Activo','Recomendaciones de acceso seguro','2026-01-18 11:00:00',24),
+('Asamblea Hyrule','Administrativo','Programado','Reunion de propietarios y residentes','2026-01-19 18:00:00',25);
+
+INSERT INTO paquetes (residente,empresa,observaciones,estado) VALUES
+('Naruto Uzumaki','Konoha Express','Caja de pergaminos','Pendiente'),
+('Sasuke Uchiha','Uchiha Logistics','Paquete fragil','Entregado'),
+('Goku Son','Capsule Corp Courier','Repuestos de entrenamiento','Pendiente'),
+('Kratos Sparta','Olympus Delivery','Equipo deportivo','Devuelto'),
+('Link Hyrule','Hylian Post','Encomienda especial','Entregado');
+
+
+
+INSERT INTO INMUEBLES (numero,id_torre,area,parqueadero,id_propietario,total_personas,total_adultos,total_menores) VALUES
+('506',2,92,'P46',(SELECT pr.id_propietario FROM PROPIETARIOS pr INNER JOIN PERSONAS p ON pr.id_persona = p.id_persona WHERE p.numero_documento='2006' LIMIT 1),2,2,0),
+('507',3,77,'P47',(SELECT pr.id_propietario FROM PROPIETARIOS pr INNER JOIN PERSONAS p ON pr.id_persona = p.id_persona WHERE p.numero_documento='2007' LIMIT 1),1,1,0),
+('508',4,68,'P48',(SELECT pr.id_propietario FROM PROPIETARIOS pr INNER JOIN PERSONAS p ON pr.id_persona = p.id_persona WHERE p.numero_documento='2008' LIMIT 1),3,2,1),
+('509',1,86,'P49',(SELECT pr.id_propietario FROM PROPIETARIOS pr INNER JOIN PERSONAS p ON pr.id_persona = p.id_persona WHERE p.numero_documento='2009' LIMIT 1),2,2,0);
+
+INSERT INTO RESIDENTE_INMUEBLE (id_residente,id_inmueble,fecha_ingreso) VALUES
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2006' LIMIT 1),(SELECT id_inmueble FROM INMUEBLES WHERE numero='506' LIMIT 1),'2026-02-01'),
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2007' LIMIT 1),(SELECT id_inmueble FROM INMUEBLES WHERE numero='507' LIMIT 1),'2026-02-02'),
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2008' LIMIT 1),(SELECT id_inmueble FROM INMUEBLES WHERE numero='508' LIMIT 1),'2026-02-03'),
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2009' LIMIT 1),(SELECT id_inmueble FROM INMUEBLES WHERE numero='509' LIMIT 1),'2026-02-04');
+
+INSERT INTO MASCOTAS (id_residente,tipo,raza,cantidad) VALUES
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2006' LIMIT 1),'Perro','Doberman',1),
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2007' LIMIT 1),'Gato','Persa',1),
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2008' LIMIT 1),'Perro','Lobero',1),
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2009' LIMIT 1),'Ave','Cuervo',1);
+
+INSERT INTO CONTACTOS_DE_EMERGENCIA (id_residente,nombre,telefono,relacion) VALUES
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2006' LIMIT 1),'Alfred Pennyworth','3111002006','Mayordomo'),
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2007' LIMIT 1),'Evelyn Williams','3111002007','Companera'),
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2008' LIMIT 1),'Gandalf Grey','3111002008','Amigo'),
+((SELECT r.id_residente FROM RESIDENTES r INNER JOIN PERSONAS p ON r.id_persona = p.id_persona WHERE p.numero_documento='2009' LIMIT 1),'Amanda Young','3111002009','Asistente');
+
+INSERT INTO NOVEDAD (id_inmueble,id_usuario,id_categoria,id_estado,id_prioridad,descripcion,fecha_reporte,fecha_cierre) VALUES
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='506' LIMIT 1),(SELECT u.id_usuario FROM USUARIOS u INNER JOIN PERSONAS p ON u.id_persona = p.id_persona WHERE p.numero_documento='2006' LIMIT 1),1,2,3,'Reparacion de camaras en ala oeste','2026-02-10',NULL),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='507' LIMIT 1),(SELECT u.id_usuario FROM USUARIOS u INNER JOIN PERSONAS p ON u.id_persona = p.id_persona WHERE p.numero_documento='2007' LIMIT 1),2,1,2,'Control de acceso en ascensor principal','2026-02-11',NULL),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='508' LIMIT 1),(SELECT u.id_usuario FROM USUARIOS u INNER JOIN PERSONAS p ON u.id_persona = p.id_persona WHERE p.numero_documento='2008' LIMIT 1),3,3,4,'Revision de tuberia en cocina','2026-02-12','2026-02-13'),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='509' LIMIT 1),(SELECT u.id_usuario FROM USUARIOS u INNER JOIN PERSONAS p ON u.id_persona = p.id_persona WHERE p.numero_documento='2009' LIMIT 1),4,2,1,'Falla intermitente en cerradura digital','2026-02-13',NULL);
+
+INSERT INTO PAGOS (id_inmueble,fecha_pago,valor,estado_pago,metodo_pago,nombre,descripcion,archivo) VALUES
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='506' LIMIT 1),'2026-02-05',410000,'Pagado','Transferencia','Bruce Wayne','Cuota administracion febrero','uploads/pagos/pago_bruce.pdf'),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='507' LIMIT 1),'2026-02-06',305000,'Pendiente','Tarjeta','Patrick Bateman','Cuota administracion febrero','uploads/pagos/pago_patrick.pdf'),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='508' LIMIT 1),'2026-02-07',275000,'Pagado','PSE','Bilbo Bolson','Cuota administracion febrero','uploads/pagos/pago_bilbo.pdf'),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='509' LIMIT 1),'2026-02-08',360000,'Pendiente','Efectivo','John Kramer','Cuota administracion febrero','uploads/pagos/pago_john.pdf');
+
+INSERT INTO AJUSTES_SALDO_PENDIENTE (id_inmueble,saldo_anterior,nuevo_saldo,motivo,id_usuario_admin) VALUES
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='506' LIMIT 1),410000,390000,'Descuento por pronto pago Wayne',1),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='507' LIMIT 1),305000,320000,'Recargo por mora Bateman',1),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='508' LIMIT 1),275000,260000,'Ajuste de fidelizacion Bolson',1),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='509' LIMIT 1),360000,360000,'Saldo confirmado Kramer',1);
+
+INSERT INTO DOCUMENTOS (id_inmueble,tipo_documento,url_documento,fecha_subida,visibilidad) VALUES
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='506' LIMIT 1),'Reglamento interno','uploads/documentos/wayne_reglamento.pdf','2026-02-01','inmueble'),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='507' LIMIT 1),'Circular convivencia','uploads/documentos/bateman_circular.pdf','2026-02-02','inmueble'),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='508' LIMIT 1),'Acta comite','uploads/documentos/bolson_acta.pdf','2026-02-03','global'),
+((SELECT id_inmueble FROM INMUEBLES WHERE numero='509' LIMIT 1),'Aviso mantenimiento','uploads/documentos/kramer_mantenimiento.pdf','2026-02-04','inmueble');
+
+INSERT INTO NOTIFICACIONES (id_usuario,mensaje,tipo,leida,fecha_envio) VALUES
+((SELECT u.id_usuario FROM USUARIOS u INNER JOIN PERSONAS p ON u.id_persona = p.id_persona WHERE p.numero_documento='2006' LIMIT 1),'Tu pago fue aplicado correctamente','Finanzas','No','2026-02-09'),
+((SELECT u.id_usuario FROM USUARIOS u INNER JOIN PERSONAS p ON u.id_persona = p.id_persona WHERE p.numero_documento='2007' LIMIT 1),'Tienes un ajuste de saldo pendiente','Finanzas','No','2026-02-10'),
+((SELECT u.id_usuario FROM USUARIOS u INNER JOIN PERSONAS p ON u.id_persona = p.id_persona WHERE p.numero_documento='2008' LIMIT 1),'Nueva comunicacion de la administracion','Sistema','No','2026-02-11'),
+((SELECT u.id_usuario FROM USUARIOS u INNER JOIN PERSONAS p ON u.id_persona = p.id_persona WHERE p.numero_documento='2009' LIMIT 1),'Novedad actualizada a En proceso','Novedades','No','2026-02-12');
+
+INSERT INTO COMUNICACIONES (titulo,tipo,estado,contenido,fecha,id_inmueble) VALUES
+('Aviso mansion Wayne','Seguridad','Activo','Nuevo protocolo de ingreso de visitantes','2026-02-10 08:30:00',(SELECT id_inmueble FROM INMUEBLES WHERE numero='506' LIMIT 1)),
+('Circular torre Bateman','Administrativo','Activo','Recordatorio de pagos y fechas limite','2026-02-11 09:00:00',(SELECT id_inmueble FROM INMUEBLES WHERE numero='507' LIMIT 1)),
+('Comunicado torre Bolson','Comunidad','Programado','Jornada de integracion de residentes','2026-02-12 17:00:00',(SELECT id_inmueble FROM INMUEBLES WHERE numero='508' LIMIT 1)),
+('Mantenimiento Kramer','Informativo','Activo','Intervencion tecnica de cerraduras','2026-02-13 10:15:00',(SELECT id_inmueble FROM INMUEBLES WHERE numero='509' LIMIT 1));
+
+INSERT INTO paquetes (residente,empresa,observaciones,estado) VALUES
+('Bruce Wayne','Gotham Logistics','Paquete confidencial','Pendiente'),
+('Patrick Bateman','WallStreet Express','Documento financiero','Entregado'),
+('Bilbo Bolson','Shire Mail','Caja de libros antiguos','Pendiente'),
+('John Kramer','Jigsaw Couriers','Herramientas de precision','Devuelto');
 
