@@ -195,7 +195,7 @@ $resultado = mysqli_query($conexion, $sql);
       </div>
     </a>
     <nav class="nav-links">
-        <a href="../index_residente.html">Inicio</a>
+        <a class="brand" href="../../html/residente/index_residente.html">Inicio</a>
         
       <a href="../../../programas/auth/logout.php" class="btn-login">Cerrar Sesión</a>
     </nav>
@@ -248,6 +248,7 @@ $resultado = mysqli_query($conexion, $sql);
                 <span style="background-color:#2196F3;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">Inmueble <?php echo htmlspecialchars($row['numero_inmueble']); ?></span>
             <?php endif; ?>
             <br>
+            <p>
             Estado:
             <span class="tag <?php
                 if ($row['estado'] == "Activa") echo "tag-activa";
