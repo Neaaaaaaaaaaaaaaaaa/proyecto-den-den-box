@@ -19,6 +19,12 @@ if($check_file_col && mysqli_num_rows($check_file_col) === 0){
     mysqli_query($conexion, "ALTER TABLE COMUNICACIONES ADD COLUMN url_archivo VARCHAR(255) NULL");
 }
 
+// Compatibilidad con bases antiguas: agrega emisor si aún no existe.
+$check_sender_col = mysqli_query($conexion, "SHOW COLUMNS FROM COMUNICACIONES LIKE 'id_usuario_emisor'");
+if($check_sender_col && mysqli_num_rows($check_sender_col) === 0){
+    mysqli_query($conexion, "ALTER TABLE COMUNICACIONES ADD COLUMN id_usuario_emisor INT NULL");
+}
+
 $titulo = mysqli_real_escape_string($conexion, $_POST['titulo']);
 $tipo = mysqli_real_escape_string($conexion, $_POST['tipo']);
 $estado = mysqli_real_escape_string($conexion, $_POST['estado']);
@@ -58,6 +64,8 @@ if (isset($_FILES['archivo_comunicacion']) && isset($_FILES['archivo_comunicacio
 
 
 $id_inmueble = NULL;
+$id_usuario_emisor = intval($_SESSION['id_usuario'] ?? 0);
+$id_usuario_emisor_sql = ($id_usuario_emisor > 0) ? (string) $id_usuario_emisor : 'NULL';
 
 if ($destinatario === 'inmueble') {
     $id_inmueble_post = intval($_POST['id_inmueble'] ?? 0);
@@ -113,9 +121,9 @@ if ($url_archivo === NULL) {
 }
 
 if ($id_inmueble === NULL) {
-    $sql = "INSERT INTO COMUNICACIONES (titulo, tipo, estado, contenido, fecha, id_inmueble, url_archivo) VALUES ('$titulo','$tipo','$estado','$contenido',NOW(),NULL,$url_archivo_sql)";
+    $sql = "INSERT INTO COMUNICACIONES (titulo, tipo, estado, contenido, fecha, id_inmueble, url_archivo, id_usuario_emisor) VALUES ('$titulo','$tipo','$estado','$contenido',NOW(),NULL,$url_archivo_sql,$id_usuario_emisor_sql)";
 } else {
-    $sql = "INSERT INTO COMUNICACIONES (titulo, tipo, estado, contenido, fecha, id_inmueble, url_archivo) VALUES ('$titulo','$tipo','$estado','$contenido',NOW(),'$id_inmueble',$url_archivo_sql)";
+    $sql = "INSERT INTO COMUNICACIONES (titulo, tipo, estado, contenido, fecha, id_inmueble, url_archivo, id_usuario_emisor) VALUES ('$titulo','$tipo','$estado','$contenido',NOW(),'$id_inmueble',$url_archivo_sql,$id_usuario_emisor_sql)";
 }
 
 mysqli_query($conexion, $sql);

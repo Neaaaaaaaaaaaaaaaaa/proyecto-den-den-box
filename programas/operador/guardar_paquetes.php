@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("ssss", $residente_canonico, $empresa, $observaciones, $estado);
 
     if ($stmt->execute()) {
-        header("Location: ../../html/operador/operator_dashboard.html?paquete=ok");
+        header("Location: ../../html/operador/operator_dashboard.php?paquete=ok");
         exit();
     } else {
         echo "Error al registrar el paquete: " . $conexion->error;

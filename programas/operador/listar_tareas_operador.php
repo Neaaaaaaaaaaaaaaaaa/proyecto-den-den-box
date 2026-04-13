@@ -215,7 +215,7 @@ $tareas_finalizadas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHE
         </a>
         <nav class="nav-links">
             <a href="../../html/operador/index_operador.html">Inicio</a>
-            <a href="../../html/operador/operator_dashboard.html">Dashboard</a>
+            <a href="../../html/operador/operator_dashboard.php">Dashboard</a>
             <a href="../../programas/auth/logout.php" class="btn-login">Cerrar Sesión</a>
         </nav>
     </div>

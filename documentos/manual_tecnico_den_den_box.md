@@ -111,7 +111,7 @@ Modulo propietario:
 Vistas principales por rol:
 
 - Administrador: html/admin/index_admin.html y html/admin/admin_dashboard.html.
-- Operador: html/operador/index_operador.html y html/operador/operator_dashboard.html.
+- Operador: html/operador/index_operador.html y html/operador/operator_dashboard.php.
 - Residente: html/residente/index_residente.html y html/residente/user_dashboard.html.
 - Propietario: html/propietario/index_propietario.html y html/propietario/propietario_crear.php.
 
