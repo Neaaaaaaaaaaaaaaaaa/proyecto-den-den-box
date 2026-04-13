@@ -12,11 +12,36 @@ if (!isset($_SESSION['id_usuario']) || ($rol !== 2 && $rol !== 1)) {
 // Obtener filtro de estado (si existe)
 $filtro_estado = isset($_GET['estado']) ? $_GET['estado'] : 'todos';
 
+$id_usuario = intval($_SESSION['id_usuario']);
+
+// Compatibilidad con bases antiguas: agregar campo de asignacion si aun no existe.
+$check_col_asig = mysqli_query($conexion, "SHOW COLUMNS FROM NOVEDAD LIKE 'id_usuario_asignado'");
+if ($check_col_asig && mysqli_num_rows($check_col_asig) === 0) {
+    mysqli_query($conexion, "ALTER TABLE NOVEDAD ADD COLUMN id_usuario_asignado INT NULL");
+}
+
 // Construir la consulta SQL
-$sql = "SELECT id, titulo, descripcion, estado, fecha_creacion, fecha_vencimiento, prioridad FROM tareas WHERE rol = 'Operador'";
+$sql = "SELECT id, titulo, descripcion, estado, fecha_creacion, fecha_vencimiento, prioridad, 'Tarea' AS origen, 'editable' AS tipo_registro FROM tareas WHERE rol = 'Operador'
+        UNION ALL
+        SELECT n.id_novedad AS id,
+               CONCAT('Novedad: ', COALESCE(c.nombre_categoria, 'Sin categoria')) AS titulo,
+               CONCAT('Descripcion: ', COALESCE(n.descripcion, 'Sin descripcion')) AS descripcion,
+               COALESCE(e.nombre_estado, 'Sin estado') AS estado,
+               n.fecha_reporte AS fecha_creacion,
+               COALESCE(n.fecha_cierre, n.fecha_reporte) AS fecha_vencimiento,
+               COALESCE(pr.nombre, 'Media') AS prioridad,
+               'Novedad asignada' AS origen,
+               'novedad' AS tipo_registro
+        FROM NOVEDAD n
+        LEFT JOIN CATEGORIAS_NOVEDAD c ON n.id_categoria = c.id_categoria
+        LEFT JOIN ESTADOS_DE_NOVEDAD e ON n.id_estado = e.id_estado
+        LEFT JOIN PRIORIDADES pr ON n.id_prioridad = pr.id_prioridad
+        WHERE n.id_usuario_asignado = $id_usuario";
 
 if ($filtro_estado !== 'todos') {
-    $sql .= " AND estado = '" . $conexion->real_escape_string($filtro_estado) . "'";
+    $sql = "SELECT * FROM ($sql) AS items WHERE estado = '" . $conexion->real_escape_string($filtro_estado) . "'";
+} else {
+    $sql = "SELECT * FROM ($sql) AS items";
 }
 
 $sql .= " ORDER BY 
@@ -30,10 +55,12 @@ $sql .= " ORDER BY
 
 $result = $conexion->query($sql);
 
-// Contar tareas por estado
+// Contar tareas y novedades por estado
 $tareas_activas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHERE rol = 'Operador' AND estado = 'Activo'")->fetch_assoc()['count'];
 $tareas_pendientes = $conexion->query("SELECT COUNT(*) as count FROM tareas WHERE rol = 'Operador' AND estado = 'Pendiente'")->fetch_assoc()['count'];
 $tareas_finalizadas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHERE rol = 'Operador' AND estado = 'Finalizado'")->fetch_assoc()['count'];
+$novedades_asignadas = $conexion->query("SELECT COUNT(*) as count FROM NOVEDAD WHERE id_usuario_asignado = $id_usuario")->fetch_assoc()['count'];
+$items_asignados = intval($tareas_activas) + intval($tareas_pendientes) + intval($tareas_finalizadas) + intval($novedades_asignadas);
 ?>
 
 <!DOCTYPE html>
@@ -86,6 +113,9 @@ $tareas_finalizadas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHE
         .task-card.finalizado {
             border-left-color: #6b7280;
         }
+        .task-card.novedad {
+            border-left-color: #2563eb;
+        }
         .task-header {
             display: flex;
             justify-content: space-between;
@@ -131,6 +161,11 @@ $tareas_finalizadas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHE
         .badge-media {
             background: #fed7aa;
             color: #9a3412;
+            margin-left: 8px;
+        }
+        .badge-origen {
+            background: #dbeafe;
+            color: #1e40af;
             margin-left: 8px;
         }
         .task-description {
@@ -223,13 +258,13 @@ $tareas_finalizadas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHE
 
 <main class="container" style="padding-top:28px;">
     <h1>Mis Tareas</h1>
-    <p>Gestiona tus tareas pendientes y en proceso.</p>
+    <p>Gestiona tus tareas y las novedades que el admin te asigna.</p>
 
     <!-- Estadísticas -->
     <div class="stats">
         <div class="stat-box">
-            <div class="stat-number"><?php echo $tareas_activas; ?></div>
-            <div class="stat-label">Activas</div>
+            <div class="stat-number"><?php echo $items_asignados; ?></div>
+            <div class="stat-label">Asignadas</div>
         </div>
         <div class="stat-box">
             <div class="stat-number"><?php echo $tareas_pendientes; ?></div>
@@ -238,6 +273,10 @@ $tareas_finalizadas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHE
         <div class="stat-box">
             <div class="stat-number"><?php echo $tareas_finalizadas; ?></div>
             <div class="stat-label">Finalizadas</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number"><?php echo $novedades_asignadas; ?></div>
+            <div class="stat-label">Novedades</div>
         </div>
     </div>
 
@@ -252,15 +291,19 @@ $tareas_finalizadas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHE
     <!-- Lista de Tareas -->
     <div>
         <?php
-        if ($result->num_rows > 0) {
+        if ($result && $result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
                 $estado_clase = strtolower($row['estado']);
                 $prioridad_clase = 'badge-' . strtolower($row['prioridad']);
                 $id_tarea = $row['id'];
-                echo "<div class='task-card {$estado_clase}'>";
+                $tipo_registro = strtolower($row['tipo_registro'] ?? 'editable');
+                $origen = $row['origen'] ?? 'Tarea';
+                $card_clase = $tipo_registro === 'novedad' ? 'novedad' : $estado_clase;
+                echo "<div class='task-card {$card_clase}'>";
                 echo "  <div class='task-header'>";
                 echo "    <div class='task-title'>" . htmlspecialchars($row['titulo']) . "</div>";
                 echo "    <div>";
+                echo "      <span class='task-badge badge-origen'>" . htmlspecialchars($origen) . "</span>";
                 echo "      <span class='task-badge badge-{$estado_clase}'>" . ucfirst($row['estado']) . "</span>";
                 echo "      <span class='task-badge {$prioridad_clase}'>" . ucfirst($row['prioridad']) . "</span>";
                 echo "    </div>";
@@ -270,16 +313,20 @@ $tareas_finalizadas = $conexion->query("SELECT COUNT(*) as count FROM tareas WHE
                 echo "    <span>Creada: " . $row['fecha_creacion'] . "</span>";
                 echo "    <span>Vencimiento: " . $row['fecha_vencimiento'] . "</span>";
                 echo "    <div class='task-actions'>";
-                echo "      <button class='btn-state " . ($row['estado'] === 'Activo' ? 'active' : '') . "' onclick=\"cambiarEstado({$id_tarea}, 'Activo')\">Activo</button>";
-                echo "      <button class='btn-state " . ($row['estado'] === 'Pendiente' ? 'active' : '') . "' onclick=\"cambiarEstado({$id_tarea}, 'Pendiente')\">Pendiente</button>";
-                echo "      <button class='btn-state " . ($row['estado'] === 'Finalizado' ? 'active' : '') . "' onclick=\"cambiarEstado({$id_tarea}, 'Finalizado')\">Finalizado</button>";
+                if ($tipo_registro === 'editable') {
+                    echo "      <button class='btn-state " . ($row['estado'] === 'Activo' ? 'active' : '') . "' onclick=\"cambiarEstado({$id_tarea}, 'Activo')\">Activo</button>";
+                    echo "      <button class='btn-state " . ($row['estado'] === 'Pendiente' ? 'active' : '') . "' onclick=\"cambiarEstado({$id_tarea}, 'Pendiente')\">Pendiente</button>";
+                    echo "      <button class='btn-state " . ($row['estado'] === 'Finalizado' ? 'active' : '') . "' onclick=\"cambiarEstado({$id_tarea}, 'Finalizado')\">Finalizado</button>";
+                } else {
+                    echo "      <span style='font-size:12px;color:#475467;font-weight:600;'>Asignada por el admin</span>";
+                }
                 echo "    </div>";
                 echo "  </div>";
                 echo "</div>";
             }
         } else {
             echo "<div class='no-tasks'>";
-            echo "  <p>No hay tareas en este estado.</p>";
+            echo "  <p>No hay tareas ni novedades asignadas en este estado.</p>";
             echo "</div>";
         }
         ?>
